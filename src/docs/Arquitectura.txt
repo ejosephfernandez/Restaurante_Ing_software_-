@@ -1,0 +1,25 @@
+Descripción y contenido de cada carpeta
+
+presentation/ (Capa de Presentación)
+Qué debe ir: Todo lo que interactúa directamente con el cliente o usuario externo (ya sea una API REST, controladores 
+web, vistas, componentes de interfaz o manejo de rutas y DTOs de entrada/salida).
+
+Ejemplos: Controladores (Controllers), rutas (Routes), esquemas de validación de peticiones, adaptadores de 
+presentación y manejo de formatos de respuesta HTTP.
+
+business/ o domain/ / service/ (Capa de Lógica de Negocio)
+Qué debe ir: El núcleo funcional de la aplicación. Aquí residen las reglas de negocio, los cálculos, las validaciones 
+complejas de procesos y los casos de uso. Esta capa no debe saber de bases de datos específicas ni de frameworks web; 
+solo procesa la información que le pasa la presentación.
+
+Ejemplos: Clases de servicio (Services), manejadores de transacciones de negocio, lógica de validación de reglas de dominio y transformadores de objetos de negocio.
+
+data/ o persistence/ / repository/ (Capa de Acceso a Datos)
+Qué debe ir: Los componentes encargados de comunicarse con fuentes externas de almacenamiento. Aquí se implementan las 
+consultas, la persistencia, el mapeo de objetos relacionales (ORM) o la conexión directa mediante drivers.
+
+Ejemplos: Repositorios (Repositories), DAOs (Data Access Objects), consultas SQL o JPA, modelos de entidades de base de datos y la configuración de conexión (como pools de conexiones).
+
+config/ (Capas transversales / Infraestructura base)
+Qué debe ir: Clases de configuración global que sostienen el funcionamiento técnico de la aplicación, tales como 
+seguridad, inyección de dependencias global, variables de entorno o adaptadores de logging.
