@@ -7,7 +7,7 @@ web, vistas, componentes de interfaz o manejo de rutas y DTOs de entrada/salida)
 Ejemplos: Controladores (Controllers), rutas (Routes), esquemas de validación de peticiones, adaptadores de 
 presentación y manejo de formatos de respuesta HTTP.
 
-business/ o domain/ / service/ (Capa de Lógica de Negocio)
+business/ o service/ (Capa de Lógica de Negocio)
 Qué debe ir: El núcleo funcional de la aplicación. Aquí residen las reglas de negocio, los cálculos, las validaciones 
 complejas de procesos y los casos de uso. Esta capa no debe saber de bases de datos específicas ni de frameworks web; 
 solo procesa la información que le pasa la presentación.

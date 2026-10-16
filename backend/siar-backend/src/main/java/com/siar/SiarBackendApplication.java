@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class SiarBackendApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(SiarBackendApplication.class, args);
+		SpringApplication.run(SiarBackendApplication.class, args);	
 	}
 
 }
