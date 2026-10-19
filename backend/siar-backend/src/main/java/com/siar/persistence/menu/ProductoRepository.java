@@ -1,0 +1,13 @@
+package com.siar.persistence.menu;
+import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.List;
+
+public interface ProductoRepository extends JpaRepository<Producto, Long> {
+    List<Producto> findByActivoTrue();
+
+    List<Producto> findByDisponibleTrueAndActivoTrue();
+
+    List<Producto> findByCategoria_IdCategoria(Long idCategoria);
+
+    boolean existsByNombreIgnoreCase(String nombre);
+}
