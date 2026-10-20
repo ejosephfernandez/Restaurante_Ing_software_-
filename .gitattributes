@@ -1,0 +1,17 @@
+# Detectar archivos de texto automáticamente
+* text=auto
+
+# Código fuente: usar LF de forma consistente
+*.java text eol=lf
+*.js text eol=lf
+*.jsx text eol=lf
+*.css text eol=lf
+*.html text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+*.properties text eol=lf
+
+# Scripts de Windows
+*.bat text eol=crlf
+*.cmd text eol=crlf
