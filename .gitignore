@@ -22,8 +22,8 @@ HELP.md
 *.class
 *.log
 # ---------- React / Node.js ----------
-# ---------- React / Node.js ----------
 **/node_modules/
+**/node_modules/**
 **/dist/
 **/build/
 **/coverage/

@@ -1,10 +1,10 @@
 package com.siar.negocio.menu;
 
-import com.siar.persistence.menu.Categoria;
-import com.siar.persistence.menu.CategoriaRepository;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.siar.persistencia.menu.Categoria;
+import com.siar.persistencia.menu.CategoriaRepository;
 
 import java.util.List;
 
