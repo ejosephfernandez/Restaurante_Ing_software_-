@@ -1,9 +1,6 @@
 HELP.md
 
 .mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
-
 # ---------- Variables de entorno y secretos ----------
 .env
 .env.*
@@ -25,11 +22,13 @@ HELP.md
 *.class
 *.log
 # ---------- React / Node.js ----------
-frontend/node_modules/
-frontend/dist/
-frontend/build/
-frontend/coverage/
-frontend/.vite/
+**/node_modules/
+**/node_modules/**
+**/dist/
+**/build/
+**/coverage/
+**/.vite/
+**/.vite-temp/
 
 # Archivos temporales de herramientas
 npm-debug.log*

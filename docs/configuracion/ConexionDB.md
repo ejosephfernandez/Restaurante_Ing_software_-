@@ -5,7 +5,7 @@ CREATE DATABASE IF NOT EXISTS siar
     COLLATE utf8mb4_unicode_ci;
 
 CREATE USER IF NOT EXISTS 'siar_app'@'localhost'
-    IDENTIFIED BY 'SiarClaveLocal2026!';
+    IDENTIFIED BY '1234';
 
 GRANT ALL PRIVILEGES ON siar.*
     TO 'siar_app'@'localhost';
