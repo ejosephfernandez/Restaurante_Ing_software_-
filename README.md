@@ -210,7 +210,7 @@ DB_PASSWORD=CAMBIAR_POR_TU_CLAVE_LOCAL
 
 Si posteriormente se incorpora Redis, podrán añadirse las variables correspondientes a su conexión.
 
-## Importante: Spring Boot no carga automáticamente un archivo .env. Antes de iniciar el backend, las variables deben cargarse en el entorno de ejecución. En Windows PowerShell se puede utilizar el script scripts/run-backend.ps1 cuando esté incluido y configurado en el repositorio.
+## Importante: Spring Boot no carga automáticamente un archivo .env. Antes de iniciar el backend, las variables deben cargarse en el entorno de ejecución. En Windows PowerShell se puede utilizar el script .\scripts\run-backend.ps1 cuando esté incluido y configurado en el repositorio.
 
 El archivo .env contiene información local y no debe subirse a Git. Cada integrante debe configurar sus propias credenciales.
 
