@@ -1,0 +1,14 @@
+$kind: http-request
+name: PATCH api/productos/1/disponibilidad
+description: ""
+url: http://localhost:8080/api/productos/1/disponibilidad?disponible=false
+method: PATCH
+queryParams:
+  - key: disponible
+    value: "false"
+    disabled: false
+    description: ""
+body:
+  type: json
+  content: ""
+order: 8000

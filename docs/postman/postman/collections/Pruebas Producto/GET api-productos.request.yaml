@@ -1,0 +1,6 @@
+$kind: http-request
+name: GET api/productos
+description: ""
+url: http://localhost:8080/api/productos
+method: GET
+order: 2000
