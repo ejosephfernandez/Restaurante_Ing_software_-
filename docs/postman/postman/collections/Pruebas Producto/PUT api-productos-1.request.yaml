@@ -1,0 +1,29 @@
+$kind: http-request
+name: PUT api/productos/1
+description: ""
+url: http://localhost:8080/api/productos/1
+method: PUT
+body:
+  type: json
+  content: "{\r
+
+    \  \"nombre\": \"Limonada natural actualizada\",\r
+
+    \  \"descripcion\": \"Limonada natural con hierbabuena\",\r
+
+    \  \"precio\": 7000.00,\r
+
+    \  \"imagen\": null,\r
+
+    \  \"disponible\": true,\r
+
+    \  \"activo\": true,\r
+
+    \  \"categoria\": {\r
+
+    \    \"idCategoria\": 1\r
+
+    \  }\r
+
+    }"
+order: 7000
