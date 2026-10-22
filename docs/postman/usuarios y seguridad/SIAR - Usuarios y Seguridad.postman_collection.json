@@ -1,0 +1,590 @@
+{
+  "info": {
+    "name": "SIAR - Usuarios y Seguridad",
+    "description": "Pruebas de autenticacion JWT y permisos por rol del backend SIAR.\n\nUso:\n1. Importar esta coleccion y el environment 'SIAR - Local'.\n2. Seleccionar el environment 'SIAR - Local'.\n3. Ejecutar primero las carpetas en orden (o usar Run collection). Los login guardan el token automaticamente en {{token_admin}} y {{token_mesero}}.\n\nRequisitos:\n- Backend corriendo en {{baseUrl}} con JWT_SECRET configurado.\n- Script DDL y 'Script DML roles SIAR.sql' ejecutados.\n- Usuario admin creado al arrancar (SIAR_ADMIN_PASSWORD en .env).\n- Para la carpeta de permisos se necesita un usuario MESERO. Si no existe, crearlo con:\n\nINSERT INTO USUARIO (id_rol, nombre, correo, usuario, contrasena, activo)\nSELECT r.id_rol, 'Mesero Prueba', 'mesero@siar.local', 'mesero',\n       (SELECT contrasena FROM USUARIO WHERE usuario = 'admin'), 1\nFROM ROL r WHERE r.nombre = 'MESERO';\n\n(queda con la misma contrasena del admin)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Usuarios - Autenticacion",
+      "description": "Login, perfil del usuario autenticado y rechazo de credenciales o tokens invalidos.",
+      "item": [
+        {
+          "name": "Login admin (guarda token_admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('Devuelve token Bearer', () => {",
+                  "    pm.expect(body.token).to.be.a('string').and.not.empty;",
+                  "    pm.expect(body.tipo).to.eql('Bearer');",
+                  "});",
+                  "pm.test('Rol ADMINISTRADOR', () => pm.expect(body.rol).to.eql('ADMINISTRADOR'));",
+                  "pm.environment.set('token_admin', body.token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"usuario\": \"{{admin_usuario}}\",\n  \"contrasena\": \"{{admin_contrasena}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "description": "Inicia sesion con el nombre de usuario. Guarda el token en la variable token_admin."
+          }
+        },
+        {
+          "name": "Login admin con correo",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Usuario admin', () => pm.expect(pm.response.json().usuario).to.eql(pm.environment.get('admin_usuario')));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"usuario\": \"{{admin_correo}}\",\n  \"contrasena\": \"{{admin_contrasena}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "description": "El campo usuario tambien acepta el correo."
+          }
+        },
+        {
+          "name": "Login con contrasena incorrecta (401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 401', () => pm.response.to.have.status(401));",
+                  "pm.test('Mensaje generico', () => pm.expect(pm.response.json().mensaje).to.eql('Usuario o contrasena incorrectos'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"usuario\": \"{{admin_usuario}}\",\n  \"contrasena\": \"clave-incorrecta\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Login de usuario inexistente (401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 401', () => pm.response.to.have.status(401));",
+                  "pm.test('Mismo mensaje que clave incorrecta', () => pm.expect(pm.response.json().mensaje).to.eql('Usuario o contrasena incorrectos'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"usuario\": \"no-existe\",\n  \"contrasena\": \"cualquiera\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Login con campos vacios (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"usuario\": \"\",\n  \"contrasena\": \"\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Perfil del usuario autenticado (me)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('Datos del token', () => {",
+                  "    pm.expect(body.usuario).to.eql(pm.environment.get('admin_usuario'));",
+                  "    pm.expect(body.rol).to.eql('ADMINISTRADOR');",
+                  "    pm.expect(body.permisos).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{token_admin}}", "type": "string" }]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "me"]
+            }
+          }
+        },
+        {
+          "name": "Perfil sin token (401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 401', () => pm.response.to.have.status(401));",
+                  "pm.test('Respuesta JSON de seguridad', () => pm.expect(pm.response.json().estado).to.eql(401));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "me"]
+            }
+          }
+        },
+        {
+          "name": "Token alterado (401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 401', () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{token_admin}}alterado", "type": "string" }]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/categorias",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "categorias"]
+            },
+            "description": "Una firma invalida debe ser rechazada."
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Permisos - Reglas por rol",
+      "description": "Verifica que cada rol solo pueda hacer lo que le corresponde (403 cuando no tiene permiso).",
+      "item": [
+        {
+          "name": "Login mesero (guarda token_mesero)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('Rol MESERO', () => pm.expect(body.rol).to.eql('MESERO'));",
+                  "pm.environment.set('token_mesero', body.token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"usuario\": \"{{mesero_usuario}}\",\n  \"contrasena\": \"{{mesero_contrasena}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "description": "Requiere el usuario MESERO descrito en la documentacion de la coleccion."
+          }
+        },
+        {
+          "name": "Admin crea categoria (201)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.environment.set('categoria_nombre', 'Categoria prueba ' + Date.now());"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "pm.environment.set('id_categoria', pm.response.json().idCategoria);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{token_admin}}", "type": "string" }]
+            },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"{{categoria_nombre}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/categorias",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "categorias"]
+            }
+          }
+        },
+        {
+          "name": "Mesero consulta categorias (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Devuelve lista', () => pm.expect(pm.response.json()).to.be.an('array'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{token_mesero}}", "type": "string" }]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/categorias",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "categorias"]
+            },
+            "description": "Cualquier usuario autenticado puede consultar el menu."
+          }
+        },
+        {
+          "name": "Mesero crea categoria (403)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 403', () => pm.response.to.have.status(403));",
+                  "pm.test('Acceso denegado', () => pm.expect(pm.response.json().error).to.eql('Acceso denegado'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{token_mesero}}", "type": "string" }]
+            },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"No deberia crearse\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/categorias",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "categorias"]
+            },
+            "description": "Crear, editar y desactivar menu es solo para ADMINISTRADOR."
+          }
+        },
+        {
+          "name": "Mesero cambia disponibilidad de producto (403)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 403', () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{token_mesero}}", "type": "string" }]
+            },
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/productos/1/disponibilidad",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "productos", "1", "disponibilidad"]
+            },
+            "description": "Cambiar disponibilidad es solo para ADMINISTRADOR y COCINERO."
+          }
+        },
+        {
+          "name": "Admin crea mesa (201)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.environment.set('mesa_numero', Date.now() % 1000000);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Mesa inicia DISPONIBLE', () => pm.expect(pm.response.json().estado).to.eql('DISPONIBLE'));",
+                  "pm.environment.set('id_mesa', pm.response.json().idMesa);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{token_admin}}", "type": "string" }]
+            },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"numero\": {{mesa_numero}},\n  \"capacidad\": 4,\n  \"ubicacion\": \"Salon principal\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/mesas",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "mesas"]
+            }
+          }
+        },
+        {
+          "name": "Mesero cambia estado de mesa (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{token_mesero}}", "type": "string" }]
+            },
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/mesas/{{id_mesa}}/estado?nuevoEstado=OCUPADA",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "mesas", "{{id_mesa}}", "estado"],
+              "query": [{ "key": "nuevoEstado", "value": "OCUPADA" }]
+            },
+            "description": "El mesero puede cambiar el estado de una mesa."
+          }
+        },
+        {
+          "name": "Mesero edita mesa (403)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 403', () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{token_mesero}}", "type": "string" }]
+            },
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"numero\": {{mesa_numero}},\n  \"capacidad\": 8,\n  \"ubicacion\": \"Terraza\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/mesas/{{id_mesa}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "mesas", "{{id_mesa}}"]
+            },
+            "description": "Crear y editar mesas es solo para ADMINISTRADOR."
+          }
+        },
+        {
+          "name": "Mesero desactiva categoria (403)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 403', () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{token_mesero}}", "type": "string" }]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/categorias/{{id_categoria}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "categorias", "{{id_categoria}}"]
+            }
+          }
+        },
+        {
+          "name": "Admin desactiva categoria (204)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 204', () => pm.response.to.have.status(204));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{token_admin}}", "type": "string" }]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/categorias/{{id_categoria}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "categorias", "{{id_categoria}}"]
+            },
+            "description": "Limpia la categoria creada en esta carpeta (desactivacion logica)."
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -208,6 +208,16 @@ DB_URL=jdbc:mysql://localhost:3306/siar?serverTimezone=UTC
 DB_USERNAME=siar_app
 DB_PASSWORD=CAMBIAR_POR_TU_CLAVE_LOCAL
 
+JWT_SECRET=CAMBIAR_POR_UNA_CLAVE_DE_AL_MENOS_32_CARACTERES
+JWT_EXPIRATION_MINUTES=480
+CORS_ALLOWED_ORIGIN=http://localhost:5173
+
+SIAR_ADMIN_USER=admin
+SIAR_ADMIN_EMAIL=admin@siar.local
+SIAR_ADMIN_PASSWORD=CAMBIAR_POR_LA_CLAVE_DEL_ADMIN
+
+JWT_SECRET es obligatoria: sin ella (o con menos de 32 caracteres) el backend no arranca. Las variables SIAR_ADMIN_* se explican en la sección 15.
+
 Si posteriormente se incorpora Redis, podrán añadirse las variables correspondientes a su conexión.
 
 ## Importante: Spring Boot no carga automáticamente un archivo .env. Antes de iniciar el backend, las variables deben cargarse en el entorno de ejecución. En Windows PowerShell se puede utilizar el script .\scripts\run-backend.ps1 cuando esté incluido y configurado en el repositorio.
@@ -229,6 +239,10 @@ Configura las variables de entorno para conectar Spring Boot con la base de dato
 Se recomienda guardar y versionar el script de creación de tablas en:
 
 docs/configuracion/Script DDL SIAR.sql
+
+Después del DDL, ejecuta el script de roles, necesario para el inicio de sesión:
+
+docs/configuracion/Script DML roles SIAR.sql
 
 El esquema debe mantenerse alineado con el modelo entidad-relación vigente y con las entidades JPA del backend.
 
@@ -301,7 +315,15 @@ Interfaz React para probar las operaciones mediante la API REST.
 
 La disponibilidad definitiva de cada operación depende de que sus clases, endpoints y pruebas estén incorporados y verificados en el repositorio.
 
-La autenticación con Spring Security y JWT, la integración de Redis y los módulos restantes se desarrollarán progresivamente.
+Seguridad implementada
+
+Inicio de sesión con usuario o correo y contraseña cifrada con BCrypt.
+
+Autenticación mediante tokens JWT con Spring Security.
+
+Autorización por rol en los endpoints de menú y mesas (ver sección 15).
+
+La integración de Redis y los módulos restantes se desarrollarán progresivamente.
 
 # 14. Endpoints iniciales de categorías
 
@@ -350,3 +372,67 @@ DELETE
 Desactivar una categoría.
 
 La API se prueba inicialmente con Postman o con la interfaz React del módulo de menú.
+
+# 15. Seguridad: autenticación JWT y roles
+
+La API está protegida con Spring Security. Todas las rutas /api/** exigen un token JWT, excepto el inicio de sesión.
+
+## Cómo autenticarse
+
+1. Iniciar sesión (el campo usuario acepta el nombre de usuario o el correo):
+
+```http
+POST /api/auth/login
+Content-Type: application/json
+
+{ "usuario": "admin", "contrasena": "tu-clave" }
+```
+
+2. La respuesta incluye el token, su fecha de expiración, el rol y los permisos del usuario.
+
+3. Enviar el token en cada petición:
+
+```http
+Authorization: Bearer <token>
+```
+
+4. GET /api/auth/me devuelve los datos del usuario dueño del token.
+
+Respuestas de error:
+
+| Código | Cuándo |
+|---|---|
+| 401 | Credenciales incorrectas, usuario inactivo, o token ausente, inválido o expirado. |
+| 403 | El usuario está autenticado pero su rol no permite la operación. |
+
+## Usuario administrador inicial
+
+Para poder hacer el primer login sin insertar hashes BCrypt a mano, la clase AdminInicial (backend/siar-backend/src/main/java/com/siar/config/seguridad/AdminInicial.java) crea un usuario ADMINISTRADOR al arrancar el backend.
+
+Solo actúa si se cumplen las dos condiciones:
+
+- La variable SIAR_ADMIN_PASSWORD está definida en el .env.
+- La tabla USUARIO está vacía.
+
+Usa SIAR_ADMIN_USER, SIAR_ADMIN_EMAIL y SIAR_ADMIN_PASSWORD como usuario, correo y contraseña; la contraseña se guarda cifrada con BCrypt. Al crearlo, el log muestra: Usuario administrador inicial 'admin' creado.
+
+En los arranques siguientes no hace nada, porque la tabla ya tiene usuarios. Si no se define SIAR_ADMIN_PASSWORD, tampoco hace nada. La contraseña nunca está escrita en el código: sale del .env de cada integrante.
+
+## Permisos por rol
+
+Los roles se cargan con el script docs/configuracion/Script DML roles SIAR.sql: ADMINISTRADOR, CAJERO, MESERO y COCINERO. Las reglas están definidas en SecurityConfig (backend/siar-backend/src/main/java/com/siar/config/seguridad/SecurityConfig.java):
+
+| Operación | Roles permitidos |
+|---|---|
+| Consultar (GET) categorías, productos y mesas | Cualquier usuario autenticado |
+| Crear, actualizar o desactivar categorías y productos | ADMINISTRADOR |
+| Cambiar disponibilidad de un producto | ADMINISTRADOR, COCINERO |
+| Crear o actualizar mesas | ADMINISTRADOR |
+| Cambiar el estado de una mesa | ADMINISTRADOR, MESERO |
+
+Cualquier endpoint nuevo queda protegido por token automáticamente. Si debe restringirse a ciertos roles, se agrega su regla en SecurityConfig.
+
+## Pruebas
+
+- Pruebas automáticas: backend/siar-backend/src/test/java/com/siar/seguridad/SeguridadJwtTests.java (no requieren base de datos).
+- Postman: importar la colección y el environment de docs/postman/usuarios y seguridad/, seleccionar el environment "SIAR - Local" y ejecutar la colección. La descripción de la colección incluye el SQL para crear el usuario MESERO que usan las pruebas de permisos.
