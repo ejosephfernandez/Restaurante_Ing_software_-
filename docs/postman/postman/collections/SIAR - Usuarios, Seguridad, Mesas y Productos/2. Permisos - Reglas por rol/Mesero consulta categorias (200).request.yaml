@@ -1,0 +1,15 @@
+$kind: http-request
+description: Cualquier usuario autenticado puede consultar el menu.
+url: "{{baseUrl}}/api/categorias"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{token_mesero}}"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status 200', () => pm.response.to.have.status(200));
+      pm.test('Devuelve lista', () => pm.expect(pm.response.json()).to.be.an('array'));
+    language: text/javascript
+order: 3000

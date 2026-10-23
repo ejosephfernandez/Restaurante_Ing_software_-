@@ -1,0 +1,18 @@
+$kind: http-request
+description: Segunda consulta al listado para comprobar que la operación PUT quedó reflejada.
+url: "{{baseUrl}}/api/mesas"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{token_admin}}"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Listado posterior responde 200', () => pm.response.to.have.status(200));
+      const body = pm.response.json();
+      pm.test('El resultado sigue siendo una lista', () => pm.expect(body).to.be.an('array'));
+      const mesa = body.find(m => String(m.idMesa) === pm.environment.get('id_mesa_prueba'));
+      pm.test('La mesa actualizada aparece en el listado', () => { pm.expect(mesa).to.exist; pm.expect(mesa.capacidad).to.eql(8); });
+    language: text/javascript
+order: 8000

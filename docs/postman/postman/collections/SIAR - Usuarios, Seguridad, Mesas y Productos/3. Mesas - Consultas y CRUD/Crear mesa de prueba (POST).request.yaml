@@ -1,0 +1,31 @@
+$kind: http-request
+description: Crea una mesa de prueba. Guarda el número y el ID para las siguientes solicitudes.
+url: "{{baseUrl}}/api/mesas"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "numero": {{mesa_numero_prueba}},
+      "capacidad": 4,
+      "ubicacion": "Salon de pruebas"
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{token_admin}}"
+scripts:
+  - type: beforeRequest
+    code: pm.environment.set('mesa_numero_prueba', String(100000 + (Date.now() % 900000)));
+    language: text/javascript
+  - type: afterResponse
+    code: |-
+      pm.test('Crear mesa responde 201', () => pm.response.to.have.status(201));
+      const body = pm.response.json();
+      pm.test('La respuesta incluye idMesa', () => pm.expect(body.idMesa).to.exist);
+      pm.test('La mesa inicia DISPONIBLE', () => pm.expect(body.estado).to.eql('DISPONIBLE'));
+      pm.environment.set('id_mesa_prueba', String(body.idMesa));
+    language: text/javascript
+order: 3000

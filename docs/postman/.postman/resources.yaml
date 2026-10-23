@@ -2,6 +2,13 @@
 workspace:
   id: 9d371e4c-bcfe-4c99-80ec-ceff496986dc
 
+# Each entry here maps a local resource to one or more corresponding objects in Postman Cloud
+
+cloudResources:
+  collections:
+    ../postman/collections/SIAR - Usuarios, Seguridad y Mesas: cd79bb71-645d-4fb7-ae5c-51be9c1c1345
+    ../postman/collections/SIAR - Usuarios, Seguridad, Mesas y Productos: 4fdae058-acb8-4073-85aa-e91015efcec6
+
 # All resources in the `postman/` folder are automatically registered in Local View.
 # Point to additional files outside the `postman/` folder to register them individually. Example:
 #localResources:

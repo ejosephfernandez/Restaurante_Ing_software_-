@@ -1,0 +1,42 @@
+name: SIAR - Local
+values:
+  - key: baseUrl
+    value: 'http://localhost:8080'
+  - key: admin_usuario
+    value: admin
+  - key: admin_correo
+    value: admin@siar.local
+  - key: admin_contrasena
+    value: Admin123*
+  - key: mesero_usuario
+    value: mesero
+  - key: mesero_contrasena
+    value: Admin123*
+  - key: token_admin
+    value: ''
+  - key: token_mesero
+    value: ''
+  - key: token_alterado
+    value: ''
+  - key: categoria_nombre
+    value: ''
+  - key: id_categoria
+    value: ''
+  - key: mesa_numero
+    value: ''
+  - key: id_mesa
+    value: ''
+  - key: mesa_numero_prueba
+    value: ''
+  - key: id_mesa_prueba
+    value: ''
+  - key: producto_nombre
+    value: ''
+  - key: producto_nombre_actualizado
+    value: ''
+  - key: id_categoria_producto
+    value: ''
+  - key: id_producto_prueba
+    value: ''
+  - key: producto_precio
+    value: '6500'

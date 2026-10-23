@@ -1,0 +1,15 @@
+$kind: http-request
+description: El mesero puede cambiar el estado de una mesa.
+url: "{{baseUrl}}/api/mesas/{{id_mesa}}/estado?nuevoEstado=OCUPADA"
+method: PUT
+queryParams:
+  nuevoEstado: OCUPADA
+auth:
+  type: bearer
+  credentials:
+    token: "{{token_mesero}}"
+scripts:
+  - type: afterResponse
+    code: pm.test('Status 200', () => pm.response.to.have.status(200));
+    language: text/javascript
+order: 7000

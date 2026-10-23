@@ -1,0 +1,17 @@
+$kind: http-request
+description: Consulta el producto individual creado en esta colección.
+url: "{{baseUrl}}/api/productos/{{id_producto_prueba}}"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{token_admin}}"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Consulta por ID responde 200', () => pm.response.to.have.status(200));
+      const body = pm.response.json();
+      pm.test('El ID de la respuesta coincide', () => pm.expect(String(body.idProducto)).to.eql(pm.environment.get('id_producto_prueba')));
+      pm.test('Incluye categoría', () => pm.expect(body.categoria).to.exist);
+    language: text/javascript
+order: 8000

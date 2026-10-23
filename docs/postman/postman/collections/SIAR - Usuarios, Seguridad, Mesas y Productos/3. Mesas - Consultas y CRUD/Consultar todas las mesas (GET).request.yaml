@@ -1,0 +1,17 @@
+$kind: http-request
+description: Lista las mesas y verifica que la mesa de prueba aparezca en el resultado.
+url: "{{baseUrl}}/api/mesas"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{token_admin}}"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Listado responde 200', () => pm.response.to.have.status(200));
+      const body = pm.response.json();
+      pm.test('El listado es un arreglo', () => pm.expect(body).to.be.an('array'));
+      pm.test('El listado contiene la mesa creada', () => pm.expect(body.some(m => String(m.idMesa) === pm.environment.get('id_mesa_prueba'))).to.eql(true));
+    language: text/javascript
+order: 4000

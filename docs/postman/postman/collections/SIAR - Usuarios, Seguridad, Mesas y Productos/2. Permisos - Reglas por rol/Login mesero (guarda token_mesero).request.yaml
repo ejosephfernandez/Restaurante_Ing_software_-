@@ -1,0 +1,24 @@
+$kind: http-request
+description: Requiere el usuario MESERO descrito en la documentacion de la coleccion.
+url: "{{baseUrl}}/api/auth/login"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "usuario": "{{mesero_usuario}}",
+      "contrasena": "{{mesero_contrasena}}"
+    }
+auth:
+  type: noauth
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status 200', () => pm.response.to.have.status(200));
+      const body = pm.response.json();
+      pm.test('Rol MESERO', () => pm.expect(body.rol).to.eql('MESERO'));
+      pm.environment.set('token_mesero', body.token);
+    language: text/javascript
+order: 1000

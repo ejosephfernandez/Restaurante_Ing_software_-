@@ -1,0 +1,12 @@
+$kind: http-request
+url: "{{baseUrl}}/api/auth/me"
+method: GET
+auth:
+  type: noauth
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status 401', () => pm.response.to.have.status(401));
+      pm.test('Respuesta JSON de seguridad', () => pm.expect(pm.response.json().estado).to.eql(401));
+    language: text/javascript
+order: 7000

@@ -1,0 +1,12 @@
+$kind: http-request
+url: "{{baseUrl}}/api/categorias/{{id_categoria}}"
+method: DELETE
+auth:
+  type: bearer
+  credentials:
+    token: "{{token_mesero}}"
+scripts:
+  - type: afterResponse
+    code: pm.test('Status 403', () => pm.response.to.have.status(403));
+    language: text/javascript
+order: 9000

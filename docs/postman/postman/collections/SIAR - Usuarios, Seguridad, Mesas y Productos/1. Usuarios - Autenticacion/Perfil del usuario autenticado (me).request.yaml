@@ -1,0 +1,19 @@
+$kind: http-request
+url: "{{baseUrl}}/api/auth/me"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{token_admin}}"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status 200', () => pm.response.to.have.status(200));
+      const body = pm.response.json();
+      pm.test('Datos del token', () => {
+          pm.expect(body.usuario).to.eql(pm.environment.get('admin_usuario'));
+          pm.expect(body.rol).to.eql('ADMINISTRADOR');
+          pm.expect(body.permisos).to.be.an('array');
+      });
+    language: text/javascript
+order: 6000

@@ -1,0 +1,16 @@
+$kind: http-request
+description: Verifica que el producto ahora tenga disponible=false.
+url: "{{baseUrl}}/api/productos/{{id_producto_prueba}}"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{token_admin}}"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Consulta después de PATCH responde 200', () => pm.response.to.have.status(200));
+      const body = pm.response.json();
+      pm.test('El producto quedó no disponible', () => pm.expect(body.disponible).to.eql(false));
+    language: text/javascript
+order: 12000

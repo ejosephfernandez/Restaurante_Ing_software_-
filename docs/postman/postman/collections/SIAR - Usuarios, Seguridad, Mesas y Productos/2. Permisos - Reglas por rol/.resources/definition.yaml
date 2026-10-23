@@ -1,0 +1,3 @@
+$kind: collection
+description: Verifica que cada rol solo pueda hacer lo que le corresponde (403 cuando no tiene permiso).
+order: 2000

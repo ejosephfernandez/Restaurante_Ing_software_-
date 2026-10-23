@@ -1,0 +1,29 @@
+$kind: http-request
+description: Actualiza el nombre, descripción y precio. Conserva la categoría y disponibilidad.
+url: "{{baseUrl}}/api/productos/{{id_producto_prueba}}"
+method: PUT
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "nombre": "{{producto_nombre_actualizado}}",
+      "descripcion": "Producto actualizado desde pruebas de Postman",
+      "precio": 7000.00,
+      "imagen": null,
+      "disponible": true,
+      "activo": true,
+      "categoria": {
+        "idCategoria": {{id_categoria_producto}}
+      }
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{token_admin}}"
+scripts:
+  - type: afterResponse
+    code: pm.test('Actualización responde 200 o 204', () => pm.expect([200, 204]).to.include(pm.response.code));
+    language: text/javascript
+order: 9000

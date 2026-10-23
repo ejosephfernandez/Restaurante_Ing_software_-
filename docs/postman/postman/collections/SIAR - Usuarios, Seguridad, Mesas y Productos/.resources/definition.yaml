@@ -1,0 +1,25 @@
+$kind: collection
+description: |-
+  Pruebas de autenticacion JWT y permisos por rol del backend SIAR.
+
+  Uso:
+  1. Importar esta coleccion y el environment 'SIAR - Local'.
+  2. Seleccionar el environment 'SIAR - Local'.
+  3. Ejecutar primero las carpetas en orden (o usar Run collection). Los login guardan el token automaticamente en {{token_admin}} y {{token_mesero}}.
+
+  Requisitos:
+  - Backend corriendo en {{baseUrl}} con JWT_SECRET configurado.
+  - Script DDL y 'Script DML roles SIAR.sql' ejecutados.
+  - Usuario admin creado al arrancar (SIAR_ADMIN_PASSWORD en .env).
+  - Para la carpeta de permisos se necesita un usuario MESERO. Si no existe, crearlo con:
+
+  INSERT INTO USUARIO (id_rol, nombre, correo, usuario, contrasena, activo)
+  SELECT r.id_rol, 'Mesero Prueba', 'mesero@siar.local', 'mesero',
+         (SELECT contrasena FROM USUARIO WHERE usuario = 'admin'), 1
+  FROM ROL r WHERE r.nombre = 'MESERO';
+
+  (queda con la misma contrasena del admin)
+
+  Nueva carpeta: "3. Mesas - Consultas y CRUD". Incluye pruebas automatizadas para listar mesas, consultar por ID, consultar disponibilidad, crear y actualizar mesas, y cambiar el estado.
+
+  4. Productos - Consultas y CRUD: ejecutar las solicitudes en orden. La carpeta genera sus propios registros de prueba y utiliza las variables id_categoria_producto e id_producto_prueba.

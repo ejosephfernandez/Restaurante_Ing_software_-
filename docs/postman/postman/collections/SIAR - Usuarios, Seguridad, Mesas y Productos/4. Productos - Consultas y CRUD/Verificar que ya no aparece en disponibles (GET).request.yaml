@@ -1,0 +1,17 @@
+$kind: http-request
+description: Verifica que el producto con disponible=false ya no aparece en el listado de disponibles.
+url: "{{baseUrl}}/api/productos/disponibles"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{token_admin}}"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Listado de disponibles responde 200', () => pm.response.to.have.status(200));
+      const body = pm.response.json();
+      pm.test('La respuesta es un arreglo', () => pm.expect(body).to.be.an('array'));
+      pm.test('No incluye el producto no disponible', () => pm.expect(body.some(p => String(p.idProducto) === pm.environment.get('id_producto_prueba'))).to.eql(false));
+    language: text/javascript
+order: 13000

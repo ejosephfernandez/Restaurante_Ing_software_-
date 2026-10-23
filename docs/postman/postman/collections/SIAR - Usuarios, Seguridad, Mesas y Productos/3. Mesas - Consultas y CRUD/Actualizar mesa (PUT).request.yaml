@@ -1,0 +1,28 @@
+$kind: http-request
+description: Actualiza la mesa creada. Sustituye el ID fijo del ejemplo por {{id_mesa_prueba}}.
+url: "{{baseUrl}}/api/mesas/{{id_mesa_prueba}}"
+method: PUT
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "numero": {{mesa_numero_prueba}},
+      "capacidad": 8,
+      "ubicacion": "Terraza de pruebas"
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{token_admin}}"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Actualizar mesa responde 200', () => pm.response.to.have.status(200));
+      const body = pm.response.json();
+      pm.test('La respuesta conserva el ID', () => pm.expect(String(body.idMesa)).to.eql(pm.environment.get('id_mesa_prueba')));
+      pm.test('Se actualizó la capacidad', () => pm.expect(body.capacidad).to.eql(8));
+      pm.test('Se actualizó la ubicación', () => pm.expect(body.ubicacion).to.eql('Terraza de pruebas'));
+    language: text/javascript
+order: 7000

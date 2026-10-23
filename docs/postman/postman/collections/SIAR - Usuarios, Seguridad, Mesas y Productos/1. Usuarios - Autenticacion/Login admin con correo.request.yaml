@@ -1,0 +1,22 @@
+$kind: http-request
+description: El campo usuario tambien acepta el correo.
+url: "{{baseUrl}}/api/auth/login"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "usuario": "{{admin_correo}}",
+      "contrasena": "{{admin_contrasena}}"
+    }
+auth:
+  type: noauth
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status 200', () => pm.response.to.have.status(200));
+      pm.test('Usuario admin', () => pm.expect(pm.response.json().usuario).to.eql(pm.environment.get('admin_usuario')));
+    language: text/javascript
+order: 2000

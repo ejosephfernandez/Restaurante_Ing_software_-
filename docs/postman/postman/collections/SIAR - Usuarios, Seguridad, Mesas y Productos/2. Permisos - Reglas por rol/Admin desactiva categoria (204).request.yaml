@@ -1,0 +1,13 @@
+$kind: http-request
+description: Limpia la categoria creada en esta carpeta (desactivacion logica).
+url: "{{baseUrl}}/api/categorias/{{id_categoria}}"
+method: DELETE
+auth:
+  type: bearer
+  credentials:
+    token: "{{token_admin}}"
+scripts:
+  - type: afterResponse
+    code: pm.test('Status 204', () => pm.response.to.have.status(204));
+    language: text/javascript
+order: 10000
