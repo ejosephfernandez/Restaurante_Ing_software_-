@@ -1,0 +1,7 @@
+$kind: collection
+description: |-
+  Pruebas de los endpoints GET /api/mesas, GET /api/mesas/{id}, GET /api/mesas/{id}/disponible, POST /api/mesas, PUT /api/mesas/{id} y PUT /api/mesas/{id}/estado.
+
+  La colección inicia sesión con admin y mesero, crea una mesa de prueba y guarda su ID en {{id_mesa_prueba}} para no depender de IDs fijos. Ejecutar en orden.
+  Requiere que existan los usuarios admin y mesero en la base de datos.
+order: 3000

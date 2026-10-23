@@ -1,0 +1,15 @@
+$kind: http-request
+description: Prueba PUT /api/mesas/{id}/estado?nuevoEstado=OCUPADA. El endpoint retorna 200 sin cuerpo.
+url: "{{baseUrl}}/api/mesas/{{id_mesa_prueba}}/estado?nuevoEstado=OCUPADA"
+method: PUT
+queryParams:
+  nuevoEstado: OCUPADA
+auth:
+  type: bearer
+  credentials:
+    token: "{{token_mesero}}"
+scripts:
+  - type: afterResponse
+    code: pm.test('Cambiar estado responde 200', () => pm.response.to.have.status(200));
+    language: text/javascript
+order: 9000

@@ -1,0 +1,13 @@
+$kind: http-request
+description: Prueba GET /api/mesas/{id}/disponible. Se comprueba el status sin asumir si el backend devuelve booleano u objeto.
+url: "{{baseUrl}}/api/mesas/{{id_mesa_prueba}}/disponible"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{token_admin}}"
+scripts:
+  - type: afterResponse
+    code: pm.test('Consulta de disponibilidad responde 200', () => pm.response.to.have.status(200));
+    language: text/javascript
+order: 6000

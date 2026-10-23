@@ -1,0 +1,15 @@
+$kind: http-request
+description: Cambia disponible a false usando el parámetro de consulta disponible=false.
+url: "{{baseUrl}}/api/productos/{{id_producto_prueba}}/disponibilidad?disponible=false"
+method: PATCH
+queryParams:
+  disponible: "false"
+auth:
+  type: bearer
+  credentials:
+    token: "{{token_admin}}"
+scripts:
+  - type: afterResponse
+    code: pm.test('PATCH responde 200 o 204', () => pm.expect([200, 204]).to.include(pm.response.code));
+    language: text/javascript
+order: 11000

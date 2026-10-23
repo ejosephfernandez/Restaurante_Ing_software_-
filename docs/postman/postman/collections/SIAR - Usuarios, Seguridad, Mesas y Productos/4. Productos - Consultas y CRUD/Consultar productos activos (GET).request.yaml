@@ -1,0 +1,17 @@
+$kind: http-request
+description: Verifica que la consulta de activos incluya el producto creado, cuyo atributo activo es true.
+url: "{{baseUrl}}/api/productos/activos"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{token_admin}}"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Activos responde 200', () => pm.response.to.have.status(200));
+      const body = pm.response.json();
+      pm.test('La respuesta es un arreglo', () => pm.expect(body).to.be.an('array'));
+      pm.test('Incluye el producto activo creado', () => pm.expect(body.some(p => String(p.idProducto) === pm.environment.get('id_producto_prueba'))).to.eql(true));
+    language: text/javascript
+order: 5000

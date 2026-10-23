@@ -1,0 +1,3 @@
+$kind: collection
+description: Login, perfil del usuario autenticado y rechazo de credenciales o tokens invalidos.
+order: 1000

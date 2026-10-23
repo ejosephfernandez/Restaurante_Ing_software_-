@@ -1,0 +1,28 @@
+$kind: http-request
+description: Crea una categoría única para que las pruebas de productos sean ejecutables de forma independiente. Guarda id_categoria_producto.
+url: "{{baseUrl}}/api/categorias"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "nombre": "{{categoria_nombre_producto}}"
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{token_admin}}"
+scripts:
+  - type: beforeRequest
+    code: pm.environment.set('categoria_nombre_producto', 'Categoria productos prueba ' + Date.now());
+    language: text/javascript
+  - type: afterResponse
+    code: |-
+      pm.test('Crear categoría responde 200 o 201', () => pm.expect([200, 201]).to.include(pm.response.code));
+      const body = pm.response.json();
+      pm.test('La respuesta incluye idCategoria', () => pm.expect(body.idCategoria).to.exist);
+      pm.environment.set('id_categoria_producto', String(body.idCategoria));
+    language: text/javascript
+order: 2000

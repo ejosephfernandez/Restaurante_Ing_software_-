@@ -1,6 +1,0 @@
-$kind: http-request
-name: " GET api/mesas"
-description: ""
-url: http://localhost:8080/api/mesas
-method: GET
-order: 2000

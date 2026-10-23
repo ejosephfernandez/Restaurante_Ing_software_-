@@ -1,0 +1,39 @@
+$kind: http-request
+description: Crea un producto disponible y activo asociado a la categoría creada en el paso anterior. Guarda id_producto_prueba.
+url: "{{baseUrl}}/api/productos"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "nombre": "{{producto_nombre}}",
+      "descripcion": "Producto creado desde pruebas de Postman",
+      "precio": 6500.00,
+      "imagen": null,
+      "disponible": true,
+      "activo": true,
+      "categoria": {
+        "idCategoria": {{id_categoria_producto}}
+      }
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{token_admin}}"
+scripts:
+  - type: beforeRequest
+    code: |-
+      pm.environment.set('producto_nombre', 'Producto prueba ' + Date.now());
+      pm.environment.set('producto_nombre_actualizado', 'Producto actualizado ' + Date.now());
+    language: text/javascript
+  - type: afterResponse
+    code: |-
+      pm.test('Crear producto responde 200 o 201', () => pm.expect([200, 201]).to.include(pm.response.code));
+      const body = pm.response.json();
+      pm.test('La respuesta incluye idProducto', () => pm.expect(body.idProducto).to.exist);
+      pm.environment.set('id_producto_prueba', String(body.idProducto));
+      pm.test('El producto creado está disponible', () => pm.expect(body.disponible).to.eql(true));
+    language: text/javascript
+order: 3000

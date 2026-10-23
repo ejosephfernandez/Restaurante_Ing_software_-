@@ -1,0 +1,126 @@
+{
+  "name": "SIAR - Local",
+  "values": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "admin_usuario",
+      "value": "admin",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "admin_correo",
+      "value": "admin@siar.local",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "admin_contrasena",
+      "value": "Admin123*",
+      "type": "secret",
+      "enabled": true
+    },
+    {
+      "key": "mesero_usuario",
+      "value": "mesero",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "mesero_contrasena",
+      "value": "Admin123*",
+      "type": "secret",
+      "enabled": true
+    },
+    {
+      "key": "token_admin",
+      "value": "",
+      "type": "secret",
+      "enabled": true
+    },
+    {
+      "key": "token_mesero",
+      "value": "",
+      "type": "secret",
+      "enabled": true
+    },
+    {
+      "key": "token_alterado",
+      "value": "",
+      "type": "secret",
+      "enabled": true
+    },
+    {
+      "key": "categoria_nombre",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "id_categoria",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "mesa_numero",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "id_mesa",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "mesa_numero_prueba",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "id_mesa_prueba",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "producto_nombre",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "producto_nombre_actualizado",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "id_categoria_producto",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "id_producto_prueba",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "producto_precio",
+      "value": "6500",
+      "type": "default",
+      "enabled": true
+    }
+  ],
+  "_postman_variable_scope": "environment"
+}

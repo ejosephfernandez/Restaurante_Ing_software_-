@@ -1,0 +1,17 @@
+$kind: http-request
+description: Verifica que el listado general sea un arreglo e incluya el producto creado.
+url: "{{baseUrl}}/api/productos"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{token_admin}}"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Listado responde 200', () => pm.response.to.have.status(200));
+      const body = pm.response.json();
+      pm.test('La respuesta es un arreglo', () => pm.expect(body).to.be.an('array'));
+      pm.test('Incluye el producto creado', () => pm.expect(body.some(p => String(p.idProducto) === pm.environment.get('id_producto_prueba'))).to.eql(true));
+    language: text/javascript
+order: 4000

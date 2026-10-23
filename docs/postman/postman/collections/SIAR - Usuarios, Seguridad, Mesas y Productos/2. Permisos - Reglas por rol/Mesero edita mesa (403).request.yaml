@@ -1,0 +1,23 @@
+$kind: http-request
+description: Crear y editar mesas es solo para ADMINISTRADOR.
+url: "{{baseUrl}}/api/mesas/{{id_mesa}}"
+method: PUT
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "numero": {{mesa_numero}},
+      "capacidad": 8,
+      "ubicacion": "Terraza"
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{token_mesero}}"
+scripts:
+  - type: afterResponse
+    code: pm.test('Status 403', () => pm.response.to.have.status(403));
+    language: text/javascript
+order: 8000

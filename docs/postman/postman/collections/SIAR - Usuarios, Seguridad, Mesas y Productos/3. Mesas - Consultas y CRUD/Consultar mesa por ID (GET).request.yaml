@@ -1,0 +1,16 @@
+$kind: http-request
+description: Obtiene la mesa creada en esta colección; equivale a GET /api/mesas/{id}.
+url: "{{baseUrl}}/api/mesas/{{id_mesa_prueba}}"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{token_admin}}"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Consulta por ID responde 200', () => pm.response.to.have.status(200));
+      const body = pm.response.json();
+      pm.test('El ID devuelto coincide', () => pm.expect(String(body.idMesa)).to.eql(pm.environment.get('id_mesa_prueba')));
+    language: text/javascript
+order: 5000

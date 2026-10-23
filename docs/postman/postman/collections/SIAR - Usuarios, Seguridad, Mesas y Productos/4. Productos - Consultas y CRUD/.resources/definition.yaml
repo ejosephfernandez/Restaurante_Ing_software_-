@@ -1,0 +1,3 @@
+$kind: collection
+description: Pruebas CRUD del módulo de productos. La carpeta crea una categoría activa y un producto de prueba, guarda sus IDs en el environment y reutiliza esos IDs en los GET, PUT y PATCH. Ejecutar las solicitudes en orden.
+order: 4000

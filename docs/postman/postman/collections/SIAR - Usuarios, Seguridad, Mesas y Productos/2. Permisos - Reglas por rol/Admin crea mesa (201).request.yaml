@@ -1,0 +1,28 @@
+$kind: http-request
+url: "{{baseUrl}}/api/mesas"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "numero": {{mesa_numero}},
+      "capacidad": 4,
+      "ubicacion": "Salon principal"
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{token_admin}}"
+scripts:
+  - type: beforeRequest
+    code: pm.environment.set('mesa_numero', Date.now() % 1000000);
+    language: text/javascript
+  - type: afterResponse
+    code: |-
+      pm.test('Status 201', () => pm.response.to.have.status(201));
+      pm.test('Mesa inicia DISPONIBLE', () => pm.expect(pm.response.json().estado).to.eql('DISPONIBLE'));
+      pm.environment.set('id_mesa', pm.response.json().idMesa);
+    language: text/javascript
+order: 6000

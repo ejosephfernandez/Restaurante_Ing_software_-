@@ -1,0 +1,13 @@
+$kind: http-request
+description: Cambiar disponibilidad es solo para ADMINISTRADOR y COCINERO.
+url: "{{baseUrl}}/api/productos/1/disponibilidad"
+method: PATCH
+auth:
+  type: bearer
+  credentials:
+    token: "{{token_mesero}}"
+scripts:
+  - type: afterResponse
+    code: pm.test('Status 403', () => pm.response.to.have.status(403));
+    language: text/javascript
+order: 5000

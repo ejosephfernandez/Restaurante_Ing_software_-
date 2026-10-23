@@ -1,0 +1,17 @@
+$kind: http-request
+description: Comprueba que PUT haya guardado el nuevo nombre y precio.
+url: "{{baseUrl}}/api/productos/{{id_producto_prueba}}"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{token_admin}}"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Consulta después de PUT responde 200', () => pm.response.to.have.status(200));
+      const body = pm.response.json();
+      pm.test('El nombre se actualizó', () => pm.expect(body.nombre).to.eql(pm.environment.get('producto_nombre_actualizado')));
+      pm.test('El precio se actualizó', () => pm.expect(Number(body.precio)).to.eql(7000));
+    language: text/javascript
+order: 10000

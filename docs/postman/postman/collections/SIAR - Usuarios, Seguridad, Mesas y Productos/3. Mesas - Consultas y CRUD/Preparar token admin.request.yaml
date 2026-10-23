@@ -1,0 +1,24 @@
+$kind: http-request
+description: Inicia sesión y guarda token_admin para las operaciones de administrador.
+url: "{{baseUrl}}/api/auth/login"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "usuario": "{{admin_usuario}}",
+      "contrasena": "{{admin_contrasena}}"
+    }
+auth:
+  type: noauth
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Login admin responde 200', () => pm.response.to.have.status(200));
+      const body = pm.response.json();
+      pm.test('El login devuelve un token', () => pm.expect(body.token).to.be.a('string').and.not.empty);
+      pm.environment.set('token_admin', body.token);
+    language: text/javascript
+order: 1000

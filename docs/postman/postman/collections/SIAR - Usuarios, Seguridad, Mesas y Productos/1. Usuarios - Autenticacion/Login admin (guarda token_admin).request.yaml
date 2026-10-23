@@ -1,0 +1,28 @@
+$kind: http-request
+description: Inicia sesion con el nombre de usuario. Guarda el token en la variable token_admin.
+url: "{{baseUrl}}/api/auth/login"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "usuario": "{{admin_usuario}}",
+      "contrasena": "{{admin_contrasena}}"
+    }
+auth:
+  type: noauth
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status 200', () => pm.response.to.have.status(200));
+      const body = pm.response.json();
+      pm.test('Devuelve token Bearer', () => {
+          pm.expect(body.token).to.be.a('string').and.not.empty;
+          pm.expect(body.tipo).to.eql('Bearer');
+      });
+      pm.test('Rol ADMINISTRADOR', () => pm.expect(body.rol).to.eql('ADMINISTRADOR'));
+      pm.environment.set('token_admin', body.token);
+    language: text/javascript
+order: 1000
