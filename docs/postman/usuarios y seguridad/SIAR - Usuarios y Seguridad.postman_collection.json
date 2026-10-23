@@ -228,6 +228,16 @@
           "name": "Token alterado (401)",
           "event": [
             {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Firma invalida a proposito: se agrega texto al final del token del admin",
+                  "pm.environment.set('token_alterado', pm.environment.get('token_admin') + 'alterado');"
+                ]
+              }
+            },
+            {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
@@ -240,7 +250,7 @@
           "request": {
             "auth": {
               "type": "bearer",
-              "bearer": [{ "key": "token", "value": "{{token_admin}}alterado", "type": "string" }]
+              "bearer": [{ "key": "token", "value": "{{token_alterado}}", "type": "string" }]
             },
             "method": "GET",
             "header": [],
