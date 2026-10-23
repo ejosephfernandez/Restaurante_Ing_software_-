@@ -63,6 +63,17 @@
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
 
+		<!-- Seguridad: Spring Security + validacion de tokens JWT (Nimbus) -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security-oauth2-resource-server</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
 		<!-- Controlador JDBC para MySQL -->
 		<dependency>
 			<groupId>com.mysql</groupId>
