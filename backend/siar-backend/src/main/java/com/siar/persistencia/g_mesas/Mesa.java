@@ -1,4 +1,4 @@
-package com.siar.persistencia.pedido;
+package com.siar.persistencia.g_mesas;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

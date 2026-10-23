@@ -1,15 +1,14 @@
-package com.siar.negocio.pedido;
+package com.siar.negocio.g_mesas;
 
-import com.siar.persistencia.pedido.ReservaRepository;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
-
-import com.siar.persistencia.pedido.Mesa;
-import com.siar.persistencia.pedido.MesaRepository;
-import com.siar.persistencia.pedido.Reserva;
-
 import org.springframework.transaction.annotation.Transactional;
+
+import com.siar.persistencia.g_mesas.Mesa;
+import com.siar.persistencia.g_mesas.MesaRepository;
+import com.siar.persistencia.g_mesas.Reserva;
+import com.siar.persistencia.g_mesas.ReservaRepository;
 
 @Service
 // @Transactional(readOnly = true)

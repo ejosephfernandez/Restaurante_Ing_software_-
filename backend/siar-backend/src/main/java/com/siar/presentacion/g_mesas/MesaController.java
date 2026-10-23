@@ -1,4 +1,4 @@
-package com.siar.presentacion.pedido;
+package com.siar.presentacion.g_mesas;
 
 import java.util.List;
 
@@ -6,9 +6,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.siar.negocio.pedido.MesaService;
-import com.siar.persistencia.pedido.Mesa;
-import com.siar.persistencia.pedido.Reserva;
+import com.siar.negocio.g_mesas.MesaService;
+import com.siar.persistencia.g_mesas.Mesa;
+import com.siar.persistencia.g_mesas.Reserva;
 
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -69,7 +69,7 @@ public class MesaController {
         return ResponseEntity.ok(
                 mesaService.estaDisponible(id));
     }
-
+//Revisar Endpoint
     // GET: Obtener reservas de la mesa
     @GetMapping("/{id}/reservas")
     public ResponseEntity<List<Reserva>> obtenerReservas(@PathVariable Long id) {

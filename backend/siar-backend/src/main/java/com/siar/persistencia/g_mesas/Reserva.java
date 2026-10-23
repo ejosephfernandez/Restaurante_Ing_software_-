@@ -1,4 +1,4 @@
-package com.siar.persistencia.pedido;
+package com.siar.persistencia.g_mesas;
 
 import java.time.LocalDateTime;
 
@@ -41,7 +41,7 @@ public class Reserva {
     @Column(name = "numPersonas", nullable = false)
     private int numPersonas;
 
-    // NUEVO CAMPO PARA EL ESTADO
+    // NUEVO CAMPO PARA EL ESTADO //
     @Column(name = "estado", nullable = false, length = 20)
     private String estado = "PENDIENTE"; // (Valor por defecto)
 
