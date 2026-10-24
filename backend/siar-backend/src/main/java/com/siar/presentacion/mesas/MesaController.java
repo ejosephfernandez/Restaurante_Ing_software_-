@@ -1,4 +1,4 @@
-package com.siar.presentacion.pedido;
+package com.siar.presentacion.mesas;
 
 import java.util.List;
 

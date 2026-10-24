@@ -1,4 +1,4 @@
-package com.siar.persistencia.pedido;
+package com.siar.persistencia.mesas;
 
 import java.time.LocalDateTime;
 import org.hibernate.annotations.CreationTimestamp;

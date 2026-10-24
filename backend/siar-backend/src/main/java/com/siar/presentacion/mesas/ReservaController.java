@@ -1,4 +1,4 @@
-package com.siar.presentacion.pedido;
+package com.siar.presentacion.mesas;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

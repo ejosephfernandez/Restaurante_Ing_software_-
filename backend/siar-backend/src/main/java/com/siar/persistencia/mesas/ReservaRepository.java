@@ -1,4 +1,4 @@
-package com.siar.persistencia.pedido;
+package com.siar.persistencia.mesas;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;

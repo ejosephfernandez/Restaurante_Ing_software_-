@@ -1,4 +1,4 @@
-package com.siar.negocio.pedido;
+package com.siar.negocio.mesas;
 
 import com.siar.persistencia.pedido.ReservaRepository;
 import java.util.List;
