@@ -147,6 +147,7 @@ CREATE TABLE IF NOT EXISTS RESERVA (
     nombre_cliente VARCHAR(100) NOT NULL,
     telefono VARCHAR(25) NULL,
     num_personas INT UNSIGNED NOT NULL,
+    estado VARCHAR(20) NOT NULL DEFAULT 'PENDIENTE',
     PRIMARY KEY (id_reserva),
     INDEX idx_reserva_mesa_fecha (id_mesa, fecha_hora),
     CONSTRAINT chk_reserva_num_personas CHECK (num_personas > 0),

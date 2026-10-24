@@ -1,9 +1,7 @@
 package com.siar.persistencia.pedido;
 
 import java.time.LocalDateTime;
-
 import org.hibernate.annotations.CreationTimestamp;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -23,22 +21,23 @@ public class Reserva {
     @Column(name = "id_reserva")
     private Long idReserva;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "id_mesa", nullable = false)
     private Mesa mesa;
 
     @CreationTimestamp // hace que Hibernate ponga la fecha y hora actual automáticamente al insertar
                        // el registro
-    @Column(name = "fechaHora", nullable = false, updatable = false)
+
+    @Column(name = "fecha_hora", nullable = false, updatable = false)
     private LocalDateTime fechaHora;
 
-    @Column(name = "nombreCliente", length = 100)
+    @Column(name = "nombre_cliente", length = 100)
     private String nombreCliente;
 
     @Column(name = "telefono", length = 20)
     private String telefono;
 
-    @Column(name = "numPersonas", nullable = false)
+    @Column(name = "num_personas", nullable = false)
     private int numPersonas;
 
     // NUEVO CAMPO PARA EL ESTADO

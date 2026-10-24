@@ -373,6 +373,25 @@ Desactivar una categoría.
 
 La API se prueba inicialmente con Postman o con la interfaz React del módulo de menú.
 
+### 14.1 Endpoints de Mesas y Reservas
+
+| Método | Ruta | Operación |
+| :--- | :--- | :--- |
+| GET | `/api/mesas` | Consultar todas las mesas. |
+| GET | `/api/mesas/{id}` | Consultar una mesa por ID. |
+| POST | `/api/mesas` | Crear una mesa. |
+| PUT | `/api/mesas/{id}` | Actualizar datos de una mesa. |
+| PUT | `/api/mesas/{id}/estado` | Cambiar el estado de una mesa. |
+| GET | `/api/mesas/{id}/disponible` | Verificar si una mesa está disponible. |
+| GET | `/api/mesas/{id}/reservas` | Consultar las reservas de una mesa. |
+| POST | `/api/reservas` | Crear una nueva reserva. |
+| GET | `/api/reservas` | Consultar todas las reservas. |
+| GET | `/api/reservas/{id}` | Consultar una reserva por ID. |
+| PUT | `/api/reservas/{id}` | Actualizar datos de una reserva. |
+| PUT | `/api/reservas/{id}/confirmar` | Confirmar una reserva. |
+| PUT | `/api/reservas/{id}/cancelar` | Cancelar una reserva. |
+| DELETE | `/api/reservas/{id}` | Eliminar una reserva. |
+
 # 15. Seguridad: autenticación JWT y roles
 
 La API está protegida con Spring Security. Todas las rutas /api/** exigen un token JWT, excepto el inicio de sesión.
@@ -424,11 +443,13 @@ Los roles se cargan con el script docs/configuracion/Script DML roles SIAR.sql: 
 
 | Operación | Roles permitidos |
 |---|---|
-| Consultar (GET) categorías, productos y mesas | Cualquier usuario autenticado |
+| Consultar (GET) categorías, productos, mesas y reservas | Cualquier usuario autenticado |
 | Crear, actualizar o desactivar categorías y productos | ADMINISTRADOR |
 | Cambiar disponibilidad de un producto | ADMINISTRADOR, COCINERO |
-| Crear o actualizar mesas | ADMINISTRADOR |
+| Crear, actualizar o eliminar mesas | ADMINISTRADOR |
 | Cambiar el estado de una mesa | ADMINISTRADOR, MESERO |
+| Crear reservas | ADMINISTRADOR, MESERO, CAJERO |
+| Confirmar o cancelar reservas | ADMINISTRADOR, MESERO |
 
 Cualquier endpoint nuevo queda protegido por token automáticamente. Si debe restringirse a ciertos roles, se agrega su regla en SecurityConfig.
 
