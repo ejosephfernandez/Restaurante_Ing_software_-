@@ -217,35 +217,43 @@ export default function CategoriasPage() {
   }
 
   return (
-    <div className="app-shell">
-      <aside className="sidebar">
-        <div className="brand-lockup">
-          <div className="brand-mark"><Icon name="utensils" size={24} /></div>
-          <div className="brand-name"><strong>SIAR</strong><span>GESTIÓN RESTAURANTE</span></div>
-        </div>
-        <div className="sidebar-caption">ESPACIO DE TRABAJO</div>
-        <nav className="side-nav" aria-label="Navegación principal">
-          <div className="nav-item nav-item-muted"><Icon name="grid" /><span>Resumen</span></div>
-          <div className="nav-item nav-item-active"><Icon name="tag" /><span>Menú y categorías</span><span className="nav-dot" /></div>
-          <div className="nav-item nav-item-muted"><Icon name="layers" /><span>Productos</span><span className="soon-label">SIGUIENTE</span></div>
-        </nav>
-        <div className="sidebar-bottom">
-          <div className="api-status"><span className={`status-light ${apiError ? 'status-down' : loading ? 'status-pending' : 'status-up'}`} /><div><strong>{apiError ? 'API sin conexión' : loading ? 'Conectando con API' : 'API de SIAR'}</strong><small>{apiError ? 'Revisa Spring Boot' : 'localhost:8080'}</small></div></div>
-          <div className="sidebar-footnote">Panel de desarrollo · SIAR</div>
-        </div>
-      </aside>
+    <div className="categorias-module">
+      
 
-      <main className="main-content">
-        <header className="topbar">
-          <div className="breadcrumb"><span>SIAR</span><span className="crumb-separator">/</span><strong>Gestión de categorías</strong></div>
-          <div className="topbar-right"><span className="environment-pill"><span /> Entorno local</span><div className="avatar">S</div></div>
-        </header>
+      <header className="topbar">
+        <div className="breadcrumb">
+          <span>Inicio</span><span className="crumb-separator">/</span>
+          <span>Menú</span><span className="crumb-separator">/</span>
+          <strong>Categorías</strong>
+        </div>
+        <div className="topbar-right">
+          <label className="topbar-search">
+            <Icon name="search" size={16} />
+            <input
+              aria-label="Buscar categorías"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Buscar categorías..."
+            />
+          </label>
+          <button className="topbar-notification" type="button" aria-label="Notificaciones" title="Notificaciones">
+            <span aria-hidden="true">♧</span><i />
+          </button>
+          <div className="profile-block">
+            <div className="avatar">AD</div>
+            <div className="profile-details">
+              <strong>Administrador</strong>
+              <small>Administrador</small>
+            </div>
+          </div>
+        </div>
+      </header>
 
         <div className="page-content">
           <section className="page-heading">
             <div>
-              <div className="eyebrow">MÓDULO DE MENÚ <span className="eyebrow-dot">•</span> RF07–RF11</div>
-              <h1>Gestión de categorías</h1>
+              <div className="eyebrow">Gestión de categorías</div>
+              <h1>Categorías</h1>
               <p>Organiza el catálogo gastronómico y mantén sus categorías bajo control.</p>
             </div>
             <button className="button button-primary button-add" onClick={abrirCrear}><Icon name="plus" size={18} /> Nueva categoría</button>
@@ -292,7 +300,6 @@ export default function CategoriasPage() {
           <div className="implementation-note"><div className="note-icon"><Icon name="layers" size={18} /></div><div><strong>Conectado al backend de SIAR</strong><p>Las operaciones se envían a Spring Boot mediante <code>/api/categorias</code>. Los cambios persisten en MySQL a través de JPA y HikariCP.</p></div><span className="note-method">REST · JSON</span></div>
           <footer className="page-footer"><span>SIAR © Sistema Integral de Administración para Restaurantes</span><span>Frontend de pruebas · Gestión de categorías</span></footer>
         </div>
-      </main>
 
       {showForm && <CategoryForm initial={editing} saving={saving} onCancel={() => { setShowForm(false); setEditing(null); }} onSubmit={guardarCategoria} />}
       {notice && <div className={`toast toast-${notice.type}`} role="status"><Icon name={notice.type === 'success' ? 'check' : 'warning'} size={18} /><span>{notice.message}</span><button onClick={() => setNotice(null)} aria-label="Cerrar notificación"><Icon name="close" size={16} /></button></div>}
