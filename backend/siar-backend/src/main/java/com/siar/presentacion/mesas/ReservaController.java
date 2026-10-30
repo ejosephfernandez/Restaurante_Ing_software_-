@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.siar.negocio.pedido.ReservaService;
-import com.siar.persistencia.pedido.Reserva;
+import com.siar.negocio.mesas.ReservaService;
+import com.siar.persistencia.mesas.Reserva;
 
 import java.util.List;
 
