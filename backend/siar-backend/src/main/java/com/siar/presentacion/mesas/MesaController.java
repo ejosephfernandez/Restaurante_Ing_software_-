@@ -6,9 +6,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.siar.negocio.pedido.MesaService;
-import com.siar.persistencia.pedido.Mesa;
-import com.siar.persistencia.pedido.Reserva;
+import com.siar.negocio.mesas.MesaService;
+import com.siar.persistencia.mesas.Mesa;
+import com.siar.persistencia.mesas.Reserva;
 
 import org.springframework.web.bind.annotation.GetMapping;
 

@@ -1,13 +1,13 @@
 package com.siar.negocio.mesas;
 
-import com.siar.persistencia.pedido.ReservaRepository;
+import com.siar.persistencia.mesas.ReservaRepository;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.siar.persistencia.pedido.Mesa;
-import com.siar.persistencia.pedido.MesaRepository;
-import com.siar.persistencia.pedido.Reserva;
+import com.siar.persistencia.mesas.Mesa;
+import com.siar.persistencia.mesas.MesaRepository;
+import com.siar.persistencia.mesas.Reserva;
 
 import org.springframework.transaction.annotation.Transactional;
 

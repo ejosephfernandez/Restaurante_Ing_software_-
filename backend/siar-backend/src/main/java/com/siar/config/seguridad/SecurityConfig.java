@@ -1,6 +1,7 @@
 package com.siar.config.seguridad;
 
 import static com.siar.persistencia.usuario.Rol.ADMINISTRADOR;
+import static com.siar.persistencia.usuario.Rol.CAJERO;
 import static com.siar.persistencia.usuario.Rol.COCINERO;
 import static com.siar.persistencia.usuario.Rol.MESERO;
 
@@ -75,6 +76,31 @@ public class SecurityConfig {
                                 .hasAnyRole(ADMINISTRADOR, MESERO)
                         .requestMatchers(HttpMethod.POST, "/api/mesas").hasRole(ADMINISTRADOR)
                         .requestMatchers(HttpMethod.PUT, "/api/mesas/*").hasRole(ADMINISTRADOR)
+                        .requestMatchers(HttpMethod.DELETE, "/api/mesas/**").hasRole(ADMINISTRADOR)
+
+                        // Reservas: crear mesero o caja; confirmar, cancelar y editar el mesero;
+                        // eliminar solo administrador
+                        .requestMatchers(HttpMethod.POST, "/api/reservas")
+                                .hasAnyRole(ADMINISTRADOR, MESERO, CAJERO)
+                        .requestMatchers(HttpMethod.PUT, "/api/reservas/**")
+                                .hasAnyRole(ADMINISTRADOR, MESERO)
+                        .requestMatchers(HttpMethod.DELETE, "/api/reservas/**").hasRole(ADMINISTRADOR)
+
+                        // Pedidos: consultar cualquier usuario; cocina marca LISTO;
+                        // el resto del flujo lo maneja el mesero
+                        .requestMatchers(HttpMethod.PATCH, "/api/pedidos/*/listo")
+                                .hasAnyRole(ADMINISTRADOR, COCINERO)
+                        .requestMatchers(HttpMethod.POST, "/api/pedidos/**")
+                                .hasAnyRole(ADMINISTRADOR, MESERO)
+                        .requestMatchers(HttpMethod.PUT, "/api/pedidos/**")
+                                .hasAnyRole(ADMINISTRADOR, MESERO)
+                        .requestMatchers(HttpMethod.PATCH, "/api/pedidos/**")
+                                .hasAnyRole(ADMINISTRADOR, MESERO)
+                        .requestMatchers(HttpMethod.DELETE, "/api/pedidos/**")
+                                .hasAnyRole(ADMINISTRADOR, MESERO)
+
+                        // Facturacion: solo caja y administrador
+                        .requestMatchers("/api/facturas/**").hasAnyRole(ADMINISTRADOR, CAJERO)
 
                         .anyRequest().authenticated())
                 // Valida el header "Authorization: Bearer <token>" en cada peticion
