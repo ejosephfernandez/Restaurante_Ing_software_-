@@ -75,6 +75,18 @@ public class SecurityConfig {
                                 .hasAnyRole(ADMINISTRADOR, MESERO)
                         .requestMatchers(HttpMethod.POST, "/api/mesas").hasRole(ADMINISTRADOR)
                         .requestMatchers(HttpMethod.PUT, "/api/mesas/*").hasRole(ADMINISTRADOR)
+                        // Pedidos: consultar cualquier usuario; cocina marca LISTO;
+                        // el resto del flujo lo maneja el mesero
+                        .requestMatchers(HttpMethod.PATCH, "/api/pedidos/*/listo")
+                                .hasAnyRole(ADMINISTRADOR, COCINERO)
+                        .requestMatchers(HttpMethod.POST, "/api/pedidos/**")
+                                .hasAnyRole(ADMINISTRADOR, MESERO)
+                        .requestMatchers(HttpMethod.PUT, "/api/pedidos/**")
+                                .hasAnyRole(ADMINISTRADOR, MESERO)
+                        .requestMatchers(HttpMethod.PATCH, "/api/pedidos/**")
+                                .hasAnyRole(ADMINISTRADOR, MESERO)
+                        .requestMatchers(HttpMethod.DELETE, "/api/pedidos/**")
+                                .hasAnyRole(ADMINISTRADOR, MESERO)
 
                         .anyRequest().authenticated())
                 // Valida el header "Authorization: Bearer <token>" en cada peticion
