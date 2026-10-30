@@ -1,64 +1,40 @@
-const API_URL = "/api/productos";
-const CATEGORIAS_URL = "/api/categorias"
-
-async function solicitar(url, opciones ={}) {
-    const respuesta = await fetch(url, {
-        ...opciones,
-        headers: {
-            ...(opciones.body ? {"Content-Tyoe": "application/json"} : {}),
-            ...opciones.headers
-        }
-    });
-
-    const texto = await respuesta.text();
-    let datos = null;
-
-    if (texto) {
-        try {
-            datos = JSON.parse(texto);
-        } catch {
-            datos = texto;
-        }
-    }
-
-    if (!respuesta.ok) {
-        throw new Error(
-            datos?.message ||
-            datos?.mensaje ||
-            `Error HTTP ${respuesta.status}`
-        );
-    }
-
-    return datos;
-}
+import { apiRequest } from "../../../services/api.js";
 
 export const productoService = {
-    listar: () => solicitar(API_URL),
+    // GET: Consultar todos los productos
+    listar: () =>
+        apiRequest("/productos"),
 
+    // GET: Consultar categorías activas
     listarCategoriasActivas: () =>
-        solicitar(`${CATEGORIAS_URL}/activas`),
+        apiRequest("/categorias/activas"),
 
+    // POST: Crear producto
     crear: (producto) =>
-        solicitar(API_URL, {
+        apiRequest("/productos", {
             method: "POST",
             body: JSON.stringify(producto)
         }),
 
+    // PUT: Actualizar producto por ID
     actualizar: (id, producto) =>
-        solicitar(`${API_URL}/${id}`, {
+        apiRequest(`/productos/${id}`, {
             method: "PUT",
             body: JSON.stringify(producto)
         }),
 
+    // PATCH: Cambiar disponibilidad
     cambiarDisponibilidad: (id, disponible) =>
-        solicitar(
-            `${API_URL}/${id}/disponibilidad?disponible=${disponible}`,
-            { method: "PATCH" }
+        apiRequest(
+            `/productos/${id}/disponibilidad?disponible=${disponible}`,
+            {
+                method: "PATCH"
+            }
         ),
 
+    // DELETE: Desactivar producto
     desactivar: (id) =>
-        solicitar(`${API_URL}/${id}`, {
+        apiRequest(`/productos/${id}`, {
             method: "DELETE"
         })
-
 };

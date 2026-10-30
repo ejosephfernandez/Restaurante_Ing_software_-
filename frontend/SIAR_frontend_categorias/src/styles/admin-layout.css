@@ -1,0 +1,215 @@
+.admin-layout {
+    display: grid;
+    grid-template-columns: 236px minmax(0, 1fr);
+    min-height: 100vh;
+    background: #f3f7f4;
+    font-family: "DM Sans", Arial, sans-serif;
+}
+
+.admin-sidebar {
+    position: sticky;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    width: 236px;
+    height: 100vh;
+    padding: 27px 19px 20px;
+    background: linear-gradient(160deg, #07513e, #034533 65%, #023d2f);
+    color: #fff;
+}
+
+.admin-brand {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    margin-bottom: 33px;
+    padding: 0 8px;
+}
+
+.admin-logo {
+    display: grid;
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    place-items: center;
+    border-radius: 13px;
+    background: #e4f5eb;
+    color: #07513e;
+    font-size: 29px;
+    font-weight: 800;
+}
+
+.admin-brand h1 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -1px;
+}
+
+.admin-brand p {
+    margin: 4px 0 0;
+    color: #c7e0d4;
+    font-size: 9px;
+    line-height: 1.45;
+}
+
+.admin-navigation {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.admin-nav-disabled,
+.admin-nav-menu,
+.admin-submenu-link {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    min-height: 43px;
+    padding: 10px 14px;
+    border: 0;
+    border-radius: 9px;
+    font-family: inherit;
+    font-size: 14px;
+    text-decoration: none;
+}
+
+.admin-nav-disabled {
+    color: #a6c6b8;
+    cursor: not-allowed;
+    user-select: none;
+}
+
+.admin-nav-icon {
+    display: inline-flex;
+    width: 19px;
+    flex-shrink: 0;
+    justify-content: center;
+    font-size: 19px;
+}
+
+.admin-nav-group {
+    padding: 3px;
+    border-radius: 13px;
+    background: rgb(255 255 255 / 8%);
+}
+
+.admin-nav-menu {
+    width: 100%;
+    background: transparent;
+    color: white;
+    cursor: pointer;
+    text-align: left;
+    font-weight: 700;
+}
+
+.admin-nav-menu:hover {
+    background: rgb(255 255 255 / 6%);
+}
+
+.admin-chevron {
+    margin-left: auto;
+    font-size: 18px;
+}
+
+.admin-submenu {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.admin-submenu-link {
+    min-height: 39px;
+    padding-left: 44px;
+    color: #d2e7dc;
+    font-size: 13px;
+    transition: background 0.15s, color 0.15s;
+}
+
+.admin-submenu-link:hover {
+    background: rgb(255 255 255 / 8%);
+    color: white;
+}
+
+.admin-submenu-link.active {
+    background: #a8dfc2;
+    color: #064c38;
+    font-weight: 700;
+}
+
+.admin-sidebar-footer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: auto;
+    padding: 18px 4px 0;
+    border-top: 1px solid rgb(255 255 255 / 15%);
+}
+
+.admin-avatar {
+    display: grid;
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+    place-items: center;
+    border-radius: 50%;
+    background: #dff2e7;
+    color: #07513e;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.admin-sidebar-footer div:last-child {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.admin-sidebar-footer strong {
+    font-size: 11px;
+}
+
+.admin-sidebar-footer span {
+    color: #bdd6c9;
+    font-size: 10px;
+}
+
+.admin-content {
+    min-width: 0;
+    min-height: 100vh;
+}
+
+@media (max-width: 760px) {
+    .admin-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+        padding: 16px;
+    }
+
+    .admin-brand {
+        margin-bottom: 16px;
+    }
+
+    .admin-navigation {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 5px;
+    }
+
+    .admin-nav-group {
+        grid-row: span 2;
+    }
+
+    .admin-sidebar-footer {
+        display: none;
+    }
+
+    .admin-content {
+        min-height: auto;
+    }
+}
