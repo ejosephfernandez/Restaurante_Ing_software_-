@@ -216,7 +216,14 @@ SIAR_ADMIN_USER=admin
 SIAR_ADMIN_EMAIL=admin@siar.local
 SIAR_ADMIN_PASSWORD=CAMBIAR_POR_LA_CLAVE_DEL_ADMIN
 
-JWT_SECRET es obligatoria: sin ella (o con menos de 32 caracteres) el backend no arranca. Las variables SIAR_ADMIN_* se explican en la sección 15.
+SIAR_TASA_IMPUESTO=0.08
+SIAR_DESCUENTO_MAXIMO=20
+SIAR_NEGOCIO_NOMBRE=Restaurante SIAR
+SIAR_NEGOCIO_NIT=900000000-0
+SIAR_NEGOCIO_DIRECCION=Cali, Colombia
+SIAR_NEGOCIO_TELEFONO=
+
+JWT_SECRET es obligatoria: sin ella (o con menos de 32 caracteres) el backend no arranca. Las variables SIAR_ADMIN_* se explican en la sección 15. Las de facturación (SIAR_TASA_IMPUESTO, SIAR_DESCUENTO_MAXIMO y SIAR_NEGOCIO_*) son opcionales y se explican en la sección 16.
 
 Si posteriormente se incorpora Redis, podrán añadirse las variables correspondientes a su conexión.
 
@@ -243,6 +250,10 @@ docs/configuracion/Script DDL SIAR.sql
 Después del DDL, ejecuta el script de roles, necesario para el inicio de sesión:
 
 docs/configuracion/Script DML roles SIAR.sql
+
+Opcional, para desarrollo y para la colección de Postman: después de arrancar el backend una vez (para que exista el admin), ejecuta el script que crea un usuario mesero, cajero y cocinero con la misma contraseña del admin:
+
+docs/configuracion/Script DML usuarios prueba SIAR.sql
 
 El esquema debe mantenerse alineado con el modelo entidad-relación vigente y con las entidades JPA del backend.
 
@@ -449,11 +460,80 @@ Los roles se cargan con el script docs/configuracion/Script DML roles SIAR.sql: 
 | Crear, actualizar o eliminar mesas | ADMINISTRADOR |
 | Cambiar el estado de una mesa | ADMINISTRADOR, MESERO |
 | Crear reservas | ADMINISTRADOR, MESERO, CAJERO |
-| Confirmar o cancelar reservas | ADMINISTRADOR, MESERO |
+| Confirmar, cancelar o actualizar reservas | ADMINISTRADOR, MESERO |
+| Eliminar reservas | ADMINISTRADOR |
+| Consultar pedidos (GET) | Cualquier usuario autenticado |
+| Crear pedidos, agregar/modificar/quitar productos, enviar a cocina, marcar entregado, cancelar | ADMINISTRADOR, MESERO |
+| Marcar un pedido como LISTO | ADMINISTRADOR, COCINERO |
+| Todo el módulo de facturación (/api/facturas/**) | ADMINISTRADOR, CAJERO |
 
 Cualquier endpoint nuevo queda protegido por token automáticamente. Si debe restringirse a ciertos roles, se agrega su regla en SecurityConfig.
 
 ## Pruebas
 
-- Pruebas automáticas: backend/siar-backend/src/test/java/com/siar/seguridad/SeguridadJwtTests.java (no requieren base de datos).
-- Postman: importar la colección y el environment de docs/postman/usuarios y seguridad/, seleccionar el environment "SIAR - Local" y ejecutar la colección. La descripción de la colección incluye el SQL para crear el usuario MESERO que usan las pruebas de permisos.
+- Pruebas automáticas (no requieren base de datos): backend/siar-backend/src/test/java/com/siar/ (seguridad, pedidos y facturación).
+- Postman: importar docs/postman/SIAR_COLLECTION.postman_collection.json y docs/postman/SIAR_ENVIRONMENT.postman_environment.json, seleccionar el environment "SIAR ENVIRONMENT" y ejecutar la colección completa en orden. Antes, ejecutar docs/configuracion/Script DML usuarios prueba SIAR.sql para crear los usuarios mesero, cajero y cocinero (quedan con la misma contraseña del admin).
+
+# 16. Pedidos y facturación
+
+## Flujo
+
+1. El mesero crea el pedido en una mesa OCUPADA o RESERVADA. El pedido inicia PENDIENTE (HU18).
+2. Agrega productos activos y disponibles con cantidad y observación; el total se recalcula solo (HU19). Mientras esté PENDIENTE puede modificar cantidades o quitar productos (HU20).
+3. Lo envía a cocina: pasa a EN_PREPARACION y se registra la hora de envío (HU22). Desde aquí ya no se modifica.
+4. Cocina lo marca LISTO y el mesero lo marca ENTREGADO (HU23).
+5. El cajero genera la factura de un pedido ENTREGADO: número consecutivo, descuento opcional e impuesto. El pedido pasa a FACTURADO (HU24, HU25, HU26).
+6. Registra el pago, simple o mixto. La factura pasa a PAGADA (HU27).
+7. Emite el comprobante, que queda guardado como histórico (HU28).
+
+Un pedido se puede cancelar en cualquier momento antes de ser FACTURADO (HU21).
+
+## Endpoints de pedidos (/api/pedidos)
+
+| Método | Ruta | Operación |
+|---|---|---|
+| GET | /api/pedidos?idMesa=&idMesero=&estado= | Consultar pedidos (filtros opcionales) |
+| GET | /api/pedidos/{id} | Consultar un pedido con su detalle |
+| POST | /api/pedidos | Crear pedido: { "idMesa": 1 } |
+| POST | /api/pedidos/{id}/detalles | Agregar producto: { "idProducto": 1, "cantidad": 2, "observacion": "sin cebolla" } |
+| PUT | /api/pedidos/{id}/detalles/{idDetalle} | Modificar cantidad u observación |
+| DELETE | /api/pedidos/{id}/detalles/{idDetalle} | Quitar un producto |
+| PATCH | /api/pedidos/{id}/enviar-cocina | PENDIENTE → EN_PREPARACION |
+| PATCH | /api/pedidos/{id}/listo | EN_PREPARACION → LISTO |
+| PATCH | /api/pedidos/{id}/entregado | LISTO → ENTREGADO |
+| PATCH | /api/pedidos/{id}/cancelar | Cancelar (si no está FACTURADO) |
+
+## Endpoints de facturación (/api/facturas)
+
+| Método | Ruta | Operación |
+|---|---|---|
+| POST | /api/facturas/previsualizar | Calcular el desglose sin guardar: { "idPedido": 1, "descuento": { "tipo": "PORCENTAJE", "valor": 10 } } |
+| POST | /api/facturas | Generar la factura (mismo cuerpo; descuento opcional, tipo PORCENTAJE o MONTO) |
+| GET | /api/facturas?estado= | Consultar facturas (EMITIDA, PAGADA, ANULADA) |
+| GET | /api/facturas/{id} | Consultar una factura |
+| GET | /api/facturas/pedido/{idPedido} | Consultar la factura de un pedido |
+| POST | /api/facturas/{id}/pagos | Registrar pagos: { "pagos": [ { "metodo": "TARJETA", "monto": 30000 }, { "metodo": "EFECTIVO", "monto": 20000 } ] } |
+| POST | /api/facturas/{id}/comprobantes | Emitir comprobante: { "formato": "PDF" } (PDF, IMPRESO o ELECTRONICO) |
+| GET | /api/facturas/{id}/comprobantes | Histórico de comprobantes |
+
+## Reglas de cálculo
+
+- Subtotal: suma de cantidad × precio unitario. El precio se guarda al agregar el producto, así que cambios posteriores en el menú no alteran pedidos ya tomados.
+- Descuento: porcentaje o monto fijo sobre el subtotal; no puede superar el subtotal.
+- Impuesto: (subtotal − descuento) × SIAR_TASA_IMPUESTO (por defecto 0.08, impuesto al consumo del 8 %).
+- Total: subtotal − descuento + impuesto. Todos los valores se redondean a 2 decimales.
+- Un CAJERO puede aplicar hasta SIAR_DESCUENTO_MAXIMO por ciento (por defecto 20). Un descuento mayor solo lo puede aplicar un ADMINISTRADOR (HU26).
+
+## Reglas de pago
+
+- La suma de los pagos debe cubrir el total.
+- Tarjeta y transferencia no pueden superar el total. El efectivo sí, y la diferencia se devuelve como cambio en la respuesta.
+- En la tabla PAGO el efectivo se guarda por lo efectivamente aplicado (sin el cambio), así la suma de PAGO.monto siempre coincide con FACTURA.total.
+
+## Comprobante
+
+El comprobante se devuelve en JSON con los datos del negocio (SIAR_NEGOCIO_*), el detalle de productos, descuento, impuesto, total y pagos, para que el frontend lo imprima o lo convierta a PDF. El backend no genera el archivo PDF.
+
+## Errores
+
+Todos los módulos responden los errores con el mismo formato JSON: { "estado": 409, "error": "Conflict", "mensaje": "..." }. Se usan 400 para datos inválidos, 403 para falta de rol o de autorización, 404 cuando no existe el recurso y 409 cuando el estado no permite la operación.
