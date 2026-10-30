@@ -1,6 +1,7 @@
 package com.siar.config.seguridad;
 
 import static com.siar.persistencia.usuario.Rol.ADMINISTRADOR;
+import static com.siar.persistencia.usuario.Rol.CAJERO;
 import static com.siar.persistencia.usuario.Rol.COCINERO;
 import static com.siar.persistencia.usuario.Rol.MESERO;
 
@@ -87,6 +88,9 @@ public class SecurityConfig {
                                 .hasAnyRole(ADMINISTRADOR, MESERO)
                         .requestMatchers(HttpMethod.DELETE, "/api/pedidos/**")
                                 .hasAnyRole(ADMINISTRADOR, MESERO)
+
+                        // Facturacion: solo caja y administrador
+                        .requestMatchers("/api/facturas/**").hasAnyRole(ADMINISTRADOR, CAJERO)
 
                         .anyRequest().authenticated())
                 // Valida el header "Authorization: Bearer <token>" en cada peticion
