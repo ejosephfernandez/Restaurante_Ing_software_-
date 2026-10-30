@@ -1,0 +1,89 @@
+/* SIAR Design Tokens — fuente única de colores, tipografía, espacios e iconos. */
+:root {
+  /* Tipografía */
+  --siar-font-body: "DM Sans", sans-serif;
+  --siar-font-heading: "Manrope", sans-serif;
+  --siar-font-size-8: 8px;
+  --siar-font-size-9: 9px;
+  --siar-font-size-9-5: 9.5px;
+  --siar-font-size-10: 10px;
+  --siar-font-size-10-5: 10.5px;
+  --siar-font-size-11: 11px;
+  --siar-font-size-11-5: 11.5px;
+  --siar-font-size-12: 12px;
+  --siar-font-size-12-5: 12.5px;
+  --siar-font-size-13: 13px;
+  --siar-font-size-15: 15px;
+  --siar-font-size-18: 18px;
+  --siar-font-size-21: 21px;
+  --siar-font-size-22: 22px;
+  --siar-font-size-23: 23px;
+  --siar-font-size-25: 25px;
+  --siar-font-size-27: 27px;
+  --siar-font-size-30: 30px;
+
+  /* Paleta principal: referencia de Categorías */
+  --siar-primary: #1e6045;
+  --siar-primary-hover: #184b36;
+  --siar-primary-dark: #153c2c;
+  --siar-primary-soft: #e5f3eb;
+  --siar-sidebar-bg: #15372a;
+  --siar-sidebar-text: #ecf5ef;
+  --siar-sidebar-muted: #bfd0c4;
+  --siar-sidebar-mark-bg: #c7e8d2;
+  --siar-sidebar-mark-fg: #174832;
+  --siar-sidebar-active: #27513d;
+  --siar-sidebar-active-accent: #a8dfbb;
+  --siar-page-bg: #f6f8f6;
+  --siar-surface: #ffffff;
+  --siar-text: #1d2a24;
+  --siar-text-heading: #20382b;
+  --siar-text-secondary: #536258;
+  --siar-text-muted: #77847d;
+  --siar-border: #e6ebe7;
+  --siar-shadow: 0 5px 18px rgba(22, 48, 35, 0.035);
+
+  /* Estados semánticos */
+  --siar-success: #318354;
+  --siar-success-bg: #e7f6ed;
+  --siar-warning: #b77b25;
+  --siar-warning-bg: #fff2de;
+  --siar-danger: #a84444;
+  --siar-danger-bg: #fff1f1;
+  --siar-info: #557eaf;
+  --siar-info-bg: #e8f1fc;
+  --siar-neutral: #858e87;
+  --siar-neutral-bg: #f0f2f0;
+  --siar-focus: #68a880;
+
+  /* Espaciado */
+  --siar-space-1: 4px;
+  --siar-space-2: 8px;
+  --siar-space-3: 12px;
+  --siar-space-4: 16px;
+  --siar-space-5: 20px;
+  --siar-space-6: 24px;
+  --siar-space-8: 32px;
+  --siar-space-10: 40px;
+
+  /* Bordes, sombras e iconos */
+  --siar-radius-sm: 6px;
+  --siar-radius-md: 8px;
+  --siar-radius-lg: 12px;
+  --siar-radius-xl: 16px;
+  --siar-icon-xs: 14px;
+  --siar-icon-sm: 16px;
+  --siar-icon-md: 18px;
+  --siar-icon-lg: 22px;
+  --siar-icon-xl: 24px;
+  --siar-icon-stroke: 1.8;
+
+  /* Alias temporales para compatibilidad con el CSS actual. */
+  --green: var(--siar-primary);
+  --green-dark: var(--siar-primary-dark);
+  --green-light: var(--siar-primary-soft);
+  --muted: var(--siar-text-muted);
+  --line: var(--siar-border);
+  --panel: var(--siar-surface);
+  --shadow: var(--siar-shadow);
+}
