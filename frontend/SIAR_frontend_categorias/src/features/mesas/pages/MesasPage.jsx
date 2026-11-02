@@ -231,8 +231,6 @@ export default function MesasPage() {
         <div className="breadcrumb">
           <span>Inicio</span>
           <span className="crumb-separator">/</span>
-          <span>Operación</span>
-          <span className="crumb-separator">/</span>
           <strong>Mesas</strong>
         </div>
         <div className="topbar-right">
@@ -250,7 +248,7 @@ export default function MesasPage() {
       <main className="page-content mesas-page-content">
         <section className="page-heading">
           <div>
-            <div className="eyebrow">MÓDULO DE OPERACIÓN <span className="eyebrow-dot">•</span> RF12–RF16</div>
+            <div className="eyebrow">MÓDULO DE MESAS</div>
             <h1>Gestión de mesas</h1>
             <p>Organiza las mesas del restaurante, consulta su estado y administra su capacidad.</p>
           </div>
