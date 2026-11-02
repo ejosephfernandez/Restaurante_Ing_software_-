@@ -61,6 +61,7 @@
 
 .admin-nav-disabled,
 .admin-nav-menu,
+.admin-nav-link,
 .admin-submenu-link {
     display: flex;
     align-items: center;
@@ -78,6 +79,23 @@
     color: #a6c6b8;
     cursor: not-allowed;
     user-select: none;
+}
+
+/* Enlaces de navegación habilitados (Pedidos, Mesas, etc.) */
+.admin-nav-link {
+    color: #d2e7dc;
+    transition: background 0.15s, color 0.15s;
+}
+
+.admin-nav-link:hover {
+    background: rgb(255 255 255 / 8%);
+    color: white;
+}
+
+.admin-nav-link.active {
+    background: #a8dfc2;
+    color: #064c38;
+    font-weight: 700;
 }
 
 .admin-nav-icon {

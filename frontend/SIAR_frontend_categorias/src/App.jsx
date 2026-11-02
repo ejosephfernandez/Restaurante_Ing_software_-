@@ -4,7 +4,8 @@ import AdminLayout from "./layouts/AdminLayout.jsx";
 
 import CategoriasPage from "./features/menu/pages/CategoriasPage.jsx";
 import ProductosPage from "./features/menu/pages/ProductosPage.jsx";
-//import PedidosPage from "./features/pedidos/pages/PedidosPage.jsx";
+import MesasPage from "./features/mesas/pages/MesasPage.jsx";
+import PedidosPage from "./features/pedidos/pages/PedidosPage.jsx";
 
 export default function App() {
     return (
@@ -23,6 +24,16 @@ export default function App() {
                 <Route
                     path="/categorias"
                     element={<CategoriasPage />}
+                />
+
+                <Route
+                    path="/mesas"
+                    element={<MesasPage />}
+                />
+
+                <Route
+                    path="/pedidos"
+                    element={<PedidosPage />}
                 />
 
                 <Route
