@@ -1,0 +1,116 @@
+/* Estilos específicos del módulo Mesas. Usa los tokens y componentes globales de SIAR. */
+.mesas-module { min-width: 0; width: 100%; color: var(--siar-text); }
+.mesas-page-content { padding-bottom: 30px; }
+.mesas-page-content .page-heading { margin-bottom: 23px; }
+.mesas-page-content .page-heading h1 { margin-bottom: 7px; }
+.mesas-stats-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-bottom: 22px; }
+.mesa-stat-card { min-height: 112px; padding: 16px 17px; }
+.mesa-stat-card .stat-value { font-variant-numeric: tabular-nums; }
+.mesas-connection-alert { margin-bottom: 18px; }
+.mesas-toast { gap: 10px; }
+.mesas-panel { overflow: hidden; }
+.mesas-toolbar { flex-wrap: wrap; padding-top: 14px; padding-bottom: 15px; }
+.mesas-search-box { flex: 1 1 260px; width: auto; max-width: 430px; }
+.mesas-filter-tabs { flex-wrap: wrap; justify-content: flex-end; }
+.mesas-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 15px; padding: 4px 21px 22px; }
+.mesa-card { position: relative; min-width: 0; overflow: hidden; display: flex; flex-direction: column; border: 1px solid #e5ebe6; border-radius: 12px; background: #fff; transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease; }
+.mesa-card:hover { transform: translateY(-2px); border-color: #d5e3d9; box-shadow: 0 8px 22px rgba(22,48,35,.07); }
+.mesa-card:before { position: absolute; inset: 0 0 auto; height: 3px; content: ""; background: #8eaaa0; }
+.mesa-card-available:before { background: #3b9561; }
+.mesa-card-occupied:before { background: #c88a35; }
+.mesa-card-reserved:before { background: #6088c3; }
+.mesa-card-inactive:before { background: #9aa39c; }
+.mesa-card-topline { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 17px 15px 0; }
+.mesa-number { color: #7c8981; font-size: var(--siar-font-size-11); white-space: nowrap; }
+.mesa-number strong { color: #2a4032; font-family: var(--siar-font-heading); font-size: var(--siar-font-size-15); font-weight: 800; }
+.mesa-status { flex-shrink: 0; font-size: 9.5px; padding: 5px 8px; }
+.mesa-status-available { color: #28784b; background: #e8f6ed; }
+.mesa-status-occupied { color: #9d6824; background: #fff3df; }
+.mesa-status-reserved { color: #426a9f; background: #eaf1fb; }
+.mesa-status-inactive { color: #6f7972; background: #f0f2f0; }
+.mesa-card-visual { min-height: 143px; position: relative; display: grid; place-items: center; margin: 3px 14px 0; }
+.mesa-tabletop { position: relative; z-index: 1; width: 91px; height: 91px; border: 7px solid #dfeee4; border-radius: 25px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; background: #edf7f0; color: #367b51; box-shadow: 0 5px 13px rgba(28,83,50,.08); }
+.mesa-tabletop svg { opacity: .8; width: 17px !important; height: 17px !important; }
+.mesa-tabletop strong { font-family: var(--siar-font-heading); font-size: 20px; line-height: 1.05; color: #285c3d; }
+.mesa-tabletop small { font-size: 9px; color: #6e8a78; }
+.mesa-card-occupied .mesa-tabletop { background: #fff5e7; border-color: #f4e4ca; color: #b37b2e; }
+.mesa-card-occupied .mesa-tabletop strong { color: #916222; }
+.mesa-card-reserved .mesa-tabletop { background: #eef4fd; border-color: #dbe7f7; color: #547cb1; }
+.mesa-card-reserved .mesa-tabletop strong { color: #456a9b; }
+.mesa-card-inactive .mesa-tabletop { background: #f4f5f4; border-color: #e5e8e5; color: #8b948d; }
+.mesa-card-inactive .mesa-tabletop strong { color: #737d75; }
+.mesa-seat { position: absolute; z-index: 0; width: 28px; height: 22px; border-radius: 7px; background: #f4f7f4; border: 1px solid #e5ebe6; box-shadow: 0 2px 4px #1c33250a; }
+.mesa-seat-top { top: 10px; left: calc(50% - 14px); }
+.mesa-seat-bottom { bottom: 10px; left: calc(50% - 14px); }
+.mesa-seat-left { left: calc(50% - 63px); top: calc(50% - 11px); }
+.mesa-seat-right { right: calc(50% - 63px); top: calc(50% - 11px); }
+.mesa-card-details { padding: 0 15px 14px; display: flex; flex-direction: column; gap: 5px; flex: 1; }
+.mesa-location-label { color: #a0aaa3; font-size: 9px; font-weight: 800; letter-spacing: .85px; }
+.mesa-card-details > strong { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #35473b; font-size: var(--siar-font-size-12); font-weight: 700; }
+.mesa-capacity { display: inline-flex; align-items: center; gap: 5px; color: #87948b; font-size: var(--siar-font-size-10); margin-top: 2px; }
+.mesa-card-actions { display: flex; gap: 8px; align-items: center; padding: 11px 12px; border-top: 1px solid #eef1ee; background: #fcfdfc; }
+.mesa-state-control { position: relative; flex: 1; min-width: 0; }
+.mesa-state-control select { appearance: none; width: 100%; height: 34px; border: 1px solid #e2e9e3; border-radius: 7px; background: #fff; color: #536459; outline: 0; padding: 0 31px 0 10px; font-family: inherit; font-size: var(--siar-font-size-10-5); font-weight: 700; cursor: pointer; }
+.mesa-state-control select:focus { border-color: var(--siar-focus); box-shadow: 0 0 0 3px rgba(54,130,78,.09); }
+.mesa-state-control select:disabled { opacity: .6; cursor: wait; }
+.mesa-state-control > svg { position: absolute; right: 10px; top: 10px; pointer-events: none; color: #8c9a90; }
+.mesa-edit-button { flex: 0 0 34px; height: 34px; width: 34px; justify-content: center; border: 1px solid #e2e9e3; background: white; padding: 0; }
+.mesa-action-progress { display: flex; align-items: center; gap: 7px; padding: 0 13px 11px; color: #718078; font-size: var(--siar-font-size-10); }
+.mesas-loading { display: flex; justify-content: center; align-items: center; gap: 10px; min-height: 210px; color: #7e8b82; font-size: var(--siar-font-size-11); }
+.mesas-empty-state { min-height: 235px; justify-content: center; }
+.mesas-empty-state .button { margin-top: 3px; }
+.mesas-footer { height: 50px; }
+.mesas-page-note { display: flex; align-items: flex-start; gap: 12px; margin-top: 17px; padding: 13px 15px; border: 1px solid #dfede3; border-radius: 10px; background: #edf5ef; }
+.mesas-note-icon { width: 32px; height: 32px; display: grid; place-items: center; flex-shrink: 0; border-radius: 9px; background: #dcefe1; color: #387751; }
+.mesas-page-note > div { min-width: 0; }
+.mesas-page-note strong { color: #315a40; font-size: var(--siar-font-size-10-5); }
+.mesas-page-note p { margin: 4px 0 0; color: #72867a; font-size: var(--siar-font-size-10); line-height: 1.6; }
+.mesa-modal { width: min(100%, 560px); }
+.mesa-form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 17px 14px; }
+.mesa-form-full { grid-column: 1 / -1; }
+.mesa-modal .inline-error { display: flex; gap: 8px; align-items: flex-start; margin-top: 16px; }
+.mesa-modal .button:disabled { opacity: .7; cursor: not-allowed; }
+.mesas-module .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+@media (max-width: 1180px) {
+  .mesas-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .mesas-stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .mesas-toolbar { align-items: flex-start; }
+  .mesas-filter-tabs { justify-content: flex-start; }
+}
+@media (max-width: 720px) {
+  .mesas-module .topbar { padding: 0 15px; }
+  .mesas-module .environment-pill { display: none; }
+  .mesas-page-content { padding: 21px 14px 24px; }
+  .mesas-page-content .page-heading { align-items: flex-start; flex-direction: column; gap: 15px; }
+  .mesas-page-content .page-heading h1 { font-size: 26px; }
+  .mesas-stats-grid { gap: 9px; }
+  .mesa-stat-card { padding: 13px; min-height: 100px; }
+  .mesa-stat-card .stat-value { font-size: 23px; }
+  .mesa-stat-card .stat-label { font-size: 10px; gap: 5px; }
+  .mesas-panel .panel-header { padding: 16px; gap: 12px; align-items: flex-start; }
+  .mesas-toolbar { padding: 12px 14px; }
+  .mesas-search-box { flex-basis: 100%; max-width: none; }
+  .mesas-filter-tabs { width: 100%; display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); }
+  .mesas-filter-tabs .filter-tab { padding: 8px 5px; }
+  .mesas-grid { grid-template-columns: minmax(0,1fr); padding: 2px 14px 17px; gap: 12px; }
+  .mesa-card { display: grid; grid-template-columns: minmax(0,1fr) minmax(105px,.72fr); }
+  .mesa-card-topline { grid-column: 1 / -1; padding: 16px 14px 0; }
+  .mesa-card-visual { grid-column: 2; grid-row: 2 / 4; margin: 0 5px; min-height: 135px; }
+  .mesa-card-details { grid-column: 1; grid-row: 2; padding: 17px 13px 10px; align-self: center; }
+  .mesa-card-actions { grid-column: 1 / -1; }
+  .mesa-seat-top { top: 8px; }
+  .mesa-seat-bottom { bottom: 8px; }
+  .mesa-seat-left { left: calc(50% - 56px); }
+  .mesa-seat-right { right: calc(50% - 56px); }
+  .mesa-tabletop { width: 78px; height: 78px; border-radius: 22px; }
+  .mesa-form-grid { grid-template-columns: minmax(0,1fr); }
+  .mesa-form-full { grid-column: auto; }
+  .mesas-footer { padding: 0 13px; gap: 10px; }
+  .mesas-footer .footer-api { gap: 5px; }
+}
+@media (max-width: 390px) {
+  .mesas-stats-grid { grid-template-columns: minmax(0,1fr); }
+  .mesa-card { grid-template-columns: minmax(0,1fr) 115px; }
+  .mesas-footer { font-size: 9px; }
+}
