@@ -31,17 +31,21 @@ export default function AdminLayout() {
 
                 <nav className="admin-navigation">
                     {/* Secciones pendientes: se muestran deshabilitadas.
-                        Cuando se implementen, reemplazar por NavLink
-                        y agregar su ruta en App.jsx. */}
+                        Inicio, Usuarios y Reportes aún no tienen módulo. */}
                     <div className="admin-nav-disabled" aria-disabled="true">
                         <span className="admin-nav-icon">⌂</span>
                         <span>Inicio</span>
                     </div>
 
-                    <div className="admin-nav-disabled" aria-disabled="true">
+                    <NavLink
+                        to="/pedidos"
+                        className={({ isActive }) =>
+                            `admin-nav-link ${isActive ? "active" : ""}`
+                        }
+                    >
                         <span className="admin-nav-icon">▤</span>
                         <span>Pedidos</span>
-                    </div>
+                    </NavLink>
 
                     {/* Menú es la sección habilitada */}
                     <div className="admin-nav-group">
