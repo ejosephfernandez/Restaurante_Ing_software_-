@@ -1,9 +1,16 @@
-import { useState } from "react";
-import { NavLink, Outlet } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { NavLink, Outlet, useLocation } from "react-router-dom";
 import "../styles/admin-layout.css";
 
 export default function AdminLayout() {
     const [menuAbierto, setMenuAbierto] = useState(true);
+    const [mesasAbierto, setMesasAbierto] = useState(
+        location.pathname.startsWith("/mesas")
+    );
+
+    useEffect(() => {
+        setMesasAbierto(location.pathname.startsWith("/mesas"));
+    }, [location.pathname]);
 
     return (
         <div className="admin-layout">
@@ -90,15 +97,42 @@ export default function AdminLayout() {
                         <span>Usuarios</span>
                     </div>
 
-                    <NavLink
-                        to="/mesas"
-                        className={({ isActive }) =>
-                            `admin-nav-link ${isActive ? "active" : ""}`
-                        }
-                    >
-                        <span className="admin-nav-icon">♧</span>
-                        <span>Mesas</span>
-                    </NavLink>
+                    {/* Se habilita seccion de mesas */}
+                    <div className="admin-nav-group">
+                        <button
+                            type="button"
+                            className="admin-nav-menu"
+                            onClick={() => setMesasAbierto((abierto) => !abierto)}
+                        >
+                            <span className="admin-nav-icon">♧</span>
+                            <span>Mesas</span>
+                            <span className="admin-chevron">
+                                {mesasAbierto ? "⌃" : "⌄"}
+                            </span>
+                        </button>
+                        {mesasAbierto && (
+                            <div className="admin-submenu">
+                                <NavLink
+                                    to="/mesas"
+                                    end
+                                    className={({ isActive }) =>
+                                        `admin-submenu-link ${isActive ? "active" : ""}`
+                                    }
+                                >
+                                    Mesas
+                                </NavLink>
+
+                                <NavLink
+                                    to="/mesas/reservas"
+                                    className={({ isActive }) =>
+                                        `admin-submenu-link ${isActive ? "active" : ""}`
+                                    }
+                                >
+                                    Reservas
+                                </NavLink>
+                            </div>
+                        )}
+                    </div>
 
                     <div className="admin-nav-disabled" aria-disabled="true">
                         <span className="admin-nav-icon">▥</span>

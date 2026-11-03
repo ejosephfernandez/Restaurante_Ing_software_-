@@ -1,35 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { categoriasApi } from '../services/categoriasApi.js';
 import '../../../styles/categorias.css';
-
-function Icon({ name, size = 18 }) {
-  const common = {
-    width: size,
-    height: size,
-    viewBox: '0 0 24 24',
-    fill: 'none',
-    stroke: 'currentColor',
-    strokeWidth: 1.8,
-    strokeLinecap: 'round',
-    strokeLinejoin: 'round',
-    'aria-hidden': true,
-  };
-  const paths = {
-    grid: <><rect x="3" y="3" width="7" height="7" rx="1.3" /><rect x="14" y="3" width="7" height="7" rx="1.3" /><rect x="3" y="14" width="7" height="7" rx="1.3" /><rect x="14" y="14" width="7" height="7" rx="1.3" /></>,
-    tag: <><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8Z" /><circle cx="7.5" cy="7.5" r="1" /></>,
-    plus: <><path d="M12 5v14" /><path d="M5 12h14" /></>,
-    search: <><circle cx="10.8" cy="10.8" r="6.8" /><path d="m16 16 5 5" /></>,
-    refresh: <><path d="M20 7v5h-5" /><path d="M4.5 9a7.8 7.8 0 0 1 13-2.5L20 12M4 17v-5h5" /><path d="M19.5 15a7.8 7.8 0 0 1-13 2.5L4 12" /></>,
-    edit: <><path d="m15 5 4 4" /><path d="M4 20l4-.8L19.2 8a2.1 2.1 0 0 0-3-3L5 16.2 4 20Z" /></>,
-    pause: <><rect x="6" y="4" width="4" height="16" rx="1" /><rect x="14" y="4" width="4" height="16" rx="1" /></>,
-    check: <><path d="m5 12 4 4L19 6" /></>,
-    close: <><path d="m6 6 12 12M18 6 6 18" /></>,
-    utensils: <><path d="M7 3v7M4.5 3v4a2.5 2.5 0 0 0 5 0V3M7 9.5V21" /><path d="M16 3v18M16 3c3 2 4 5 4 8h-4" /></>,
-    warning: <><path d="M12 3 22 20H2L12 3Z" /><path d="M12 9v4M12 16h.01" /></>,
-    layers: <><path d="m12 3 9 5-9 5-9-5 9-5Z" /><path d="m3 12 9 5 9-5M3 16l9 5 9-5" /></>,
-  };
-  return <svg {...common}>{paths[name] || paths.grid}</svg>;
-}
+import SiarIcon from '../../../components/ui/SiarIcon.jsx';
+const Icon = SiarIcon;
 
 const EMPTY_FORM = { nombre: '', activa: true };
 
@@ -252,8 +225,8 @@ export default function CategoriasPage() {
         <div className="page-content">
           <section className="page-heading">
             <div>
-              <div className="eyebrow">Gestión de categorías</div>
-              <h1>Categorías</h1>
+              <div className="eyebrow">MÓDULO DE MENÚ</div>
+              <h1>Gestión de categorías</h1>
               <p>Organiza el catálogo gastronómico y mantén sus categorías bajo control.</p>
             </div>
             <button className="button button-primary button-add" onClick={abrirCrear}><Icon name="plus" size={18} /> Nueva categoría</button>
