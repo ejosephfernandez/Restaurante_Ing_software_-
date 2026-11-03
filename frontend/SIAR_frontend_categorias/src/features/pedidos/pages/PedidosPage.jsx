@@ -1,15 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import PedidoForm from "../components/PedidoForm.jsx";
 import PedidosList from "../components/PedidosList.jsx";
 import { pedidoService } from "../services/pedidoService.js";
+import SiarIcon from "../../../components/ui/SiarIcon.jsx";
+import "../../../styles/pedidos.css";
 
 /**
- * Pagina del modulo de pedidos: carga los datos, orquesta las acciones de
- * cambio de estado y muestra el formulario para crear/editar un pedido.
+ * Página del módulo de pedidos.
+ * Conserva la lógica de negocio existente y utiliza el sistema visual global SIAR.
  */
-
-// Accion que dispara cada boton de la tabla.
 const ACCIONES = {
     "enviar-cocina": {
         llamar: pedidoService.enviarACocina,
@@ -29,13 +29,43 @@ const ACCIONES = {
     }
 };
 
+function normalizarEstado(estado) {
+    return String(estado ?? "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .trim()
+        .toUpperCase()
+        .replace(/[\s-]+/g, "_");
+}
+
+function obtenerEstado(pedido) {
+    return normalizarEstado(
+        pedido?.estado ?? pedido?.estadoPedido ?? pedido?.nombreEstado
+    );
+}
+
+function StatCard({ icon, label, value, note, tone = "icon-green" }) {
+    return (
+        <article className="stat-card pedido-stat-card">
+            <div className="stat-label">
+                {label}
+                <span className={`stat-icon ${tone}`}>
+                    <SiarIcon name={icon} size="sm" />
+                </span>
+            </div>
+            <div className="stat-value">{value}</div>
+            <div className="stat-note">{note}</div>
+        </article>
+    );
+}
+
 export default function PedidosPage() {
     const [pedidos, setPedidos] = useState([]);
     const [mesas, setMesas] = useState([]);
     const [productos, setProductos] = useState([]);
 
     const [filtros, setFiltros] = useState({ estado: "", idMesa: "" });
-    const [version, setVersion] = useState(0); // fuerza recarga despues de una accion
+    const [version, setVersion] = useState(0);
 
     const [cargando, setCargando] = useState(true);
     const [error, setError] = useState("");
@@ -45,7 +75,7 @@ export default function PedidosPage() {
     const [formAbierto, setFormAbierto] = useState(false);
     const [pedidoSeleccionado, setPedidoSeleccionado] = useState(null);
 
-    // Carga de pedidos cada vez que cambian los filtros o se pide recargar.
+    // Carga de pedidos cuando cambian los filtros o se solicita una actualización.
     useEffect(() => {
         let vigente = true;
 
@@ -58,19 +88,20 @@ export default function PedidosPage() {
                     setError("");
                 }
             } catch (err) {
-                if (vigente) setError(err.message || "No fue posible cargar los pedidos.");
+                if (vigente) {
+                    setError(err?.message || "No fue posible cargar los pedidos.");
+                }
             } finally {
                 if (vigente) setCargando(false);
             }
         })();
 
-        // Evita actualizar el estado si el componente se desmonta o cambian los filtros.
         return () => {
             vigente = false;
         };
     }, [filtros, version]);
 
-    // Catalogos que necesita el formulario (se cargan una sola vez).
+    // Catálogos requeridos por el formulario.
     useEffect(() => {
         let vigente = true;
 
@@ -87,7 +118,7 @@ export default function PedidosPage() {
                 }
             } catch (err) {
                 if (vigente) {
-                    setError(err.message || "No fue posible cargar mesas y productos.");
+                    setError(err?.message || "No fue posible cargar mesas y productos.");
                 }
             }
         })();
@@ -98,7 +129,7 @@ export default function PedidosPage() {
     }, []);
 
     function recargar() {
-        setVersion((valor) => valor + 1);
+        setVersion((actual) => actual + 1);
     }
 
     function cambiarFiltro(campo, valor) {
@@ -119,12 +150,14 @@ export default function PedidosPage() {
         setMensaje("");
     }
 
-    // Ejecuta el cambio de estado elegido en la tabla.
     async function ejecutarAccion(pedido, accion) {
         const config = ACCIONES[accion];
         if (!config) return;
 
-        if (accion === "cancelar" && !window.confirm(`¿Cancelar el pedido #${pedido.idPedido}?`)) {
+        if (
+            accion === "cancelar" &&
+            !window.confirm(`¿Cancelar el pedido #${pedido.idPedido}?`)
+        ) {
             return;
         }
 
@@ -136,117 +169,194 @@ export default function PedidosPage() {
             const actualizado = await config.llamar(pedido.idPedido);
             setMensaje(config.mensaje);
 
-            // Mantiene sincronizado el formulario si el pedido abierto es el mismo.
             if (pedidoSeleccionado?.idPedido === pedido.idPedido) {
                 setPedidoSeleccionado(actualizado);
             }
 
             recargar();
         } catch (err) {
-            setError(err.message || "No fue posible actualizar el pedido.");
+            setError(err?.message || "No fue posible actualizar el pedido.");
         } finally {
             setProcesandoId(null);
         }
     }
 
-    // El formulario avisa cuando crea un pedido o modifica su detalle.
     function alActualizarPedido(actualizado) {
         setPedidoSeleccionado(actualizado);
         recargar();
     }
 
+    const resumen = useMemo(() => {
+        const estados = pedidos.map(obtenerEstado);
+        return {
+            total: pedidos.length,
+            pendientes: estados.filter((estado) => estado === "PENDIENTE").length,
+            preparacion: estados.filter((estado) =>
+                ["EN_PREPARACION", "PREPARACION"].includes(estado)
+            ).length,
+            listos: estados.filter((estado) => ["LISTO", "LISTA"].includes(estado)).length
+        };
+    }, [pedidos]);
+
     return (
-        <div className="container-fluid py-4">
-            <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-                <div>
-                    <h2 className="mb-0">Pedidos</h2>
-                    <p className="text-muted mb-0">
-                        Crea pedidos, agrega productos y actualiza su estado.
-                    </p>
+        <div className="pedidos-module">
+            <header className="topbar">
+                <div className="breadcrumb">
+                    <span>Inicio</span>
+                    <span className="crumb-separator">/</span>
+                    <strong>Pedidos</strong>
                 </div>
 
-                <button type="button" className="btn btn-primary" onClick={abrirNuevoPedido}>
-                    + Nuevo pedido
-                </button>
-            </div>
+                <div className="topbar-right">
+                    <span className="environment-pill">
+                        <span /> Entorno local
+                    </span>
+                    <div className="profile-block">
+                        <div className="avatar">AD</div>
+                        <div className="profile-details">
+                            <strong>Administrador</strong>
+                            <small>Administrador</small>
+                        </div>
+                    </div>
+                </div>
+            </header>
 
-            {error && (
-                <div className="alert alert-danger d-flex justify-content-between align-items-center" role="alert">
-                    <span>{error}</span>
+            <main className="page-content pedidos-page-content">
+                <section className="page-heading">
+                    <div>
+                        <div className="eyebrow">MÓDULO DE PEDIDOS </div>
+                        <h1>GESTIÓN DE PEDIDOS</h1>
+                        <p>Administra las comandas, agrega productos y da seguimiento a cada pedido.</p>
+                    </div>
                     <button
                         type="button"
-                        className="btn-close"
-                        aria-label="Cerrar"
-                        onClick={() => setError("")}
+                        className="button button-primary button-add"
+                        onClick={abrirNuevoPedido}
+                    >
+                        <SiarIcon name="plus" size="sm" /> Nuevo pedido
+                    </button>
+                </section>
+
+                {error && !formAbierto && (
+                    <section className="connection-alert pedidos-connection-alert" role="alert">
+                        <div className="alert-icon">
+                            <SiarIcon name="warning" size="md" />
+                        </div>
+                        <div className="alert-copy">
+                            <strong>No se pudo completar la operación</strong>
+                            <p>{error}</p>
+                        </div>
+                        <button
+                            type="button"
+                            className="icon-button pedidos-alert-close"
+                            onClick={() => setError("")}
+                            aria-label="Cerrar mensaje"
+                        >
+                            <SiarIcon name="close" size="sm" />
+                        </button>
+                    </section>
+                )}
+
+                {mensaje && (
+                    <div className="toast toast-success pedidos-toast" role="status">
+                        <SiarIcon name="check" size="md" />
+                        <span>{mensaje}</span>
+                        <button type="button" onClick={() => setMensaje("")} aria-label="Cerrar notificación">
+                            <SiarIcon name="close" size="sm" />
+                        </button>
+                    </div>
+                )}
+
+                <section className="stats-grid pedidos-stats-grid" aria-label="Resumen de pedidos">
+                    <StatCard
+                        icon="clipboard"
+                        label="Pedidos consultados"
+                        value={cargando ? "—" : String(resumen.total).padStart(2, "0")}
+                        note="Según los filtros actuales"
+                        tone="icon-violet"
                     />
-                </div>
-            )}
-
-            {mensaje && (
-                <div className="alert alert-success d-flex justify-content-between align-items-center" role="status">
-                    <span>{mensaje}</span>
-                    <button
-                        type="button"
-                        className="btn-close"
-                        aria-label="Cerrar"
-                        onClick={() => setMensaje("")}
+                    <StatCard
+                        icon="calendar"
+                        label="Pendientes"
+                        value={cargando ? "—" : String(resumen.pendientes).padStart(2, "0")}
+                        note="Esperando atención"
+                        tone="icon-amber"
                     />
-                </div>
-            )}
+                    <StatCard
+                        icon="utensils"
+                        label="En preparación"
+                        value={cargando ? "—" : String(resumen.preparacion).padStart(2, "0")}
+                        note="En proceso en cocina"
+                        tone="icon-green"
+                    />
+                    <StatCard
+                        icon="check"
+                        label="Listos"
+                        value={cargando ? "—" : String(resumen.listos).padStart(2, "0")}
+                        note="Pendientes de entrega"
+                        tone="icon-green"
+                    />
+                </section>
 
-            <PedidosList
-                pedidos={pedidos}
-                cargando={cargando}
-                procesandoId={procesandoId}
-                filtros={filtros}
-                mesas={mesas}
-                onCambiarFiltro={cambiarFiltro}
-                onAccion={ejecutarAccion}
-                onAgregarProductos={abrirProductos}
-            />
+                <section className="pedidos-list-shell" aria-label="Listado de pedidos">
+                    <PedidosList
+                        pedidos={pedidos}
+                        cargando={cargando}
+                        procesandoId={procesandoId}
+                        filtros={filtros}
+                        mesas={mesas}
+                        onCambiarFiltro={cambiarFiltro}
+                        onAccion={ejecutarAccion}
+                        onAgregarProductos={abrirProductos}
+                    />
+                </section>
 
-            {/* Formulario en modal (Bootstrap sin JavaScript: se controla con estado) */}
-            {formAbierto && (
-                <>
+                {formAbierto && (
                     <div
-                        className="modal fade show d-block"
-                        role="dialog"
-                        aria-modal="true"
-                        aria-labelledby="titulo-form-pedido"
-                        onMouseDown={(e) => {
-                            if (e.target === e.currentTarget) setFormAbierto(false);
+                        className="pedidos-modal-overlay"
+                        role="presentation"
+                        onMouseDown={(evento) => {
+                            if (evento.target === evento.currentTarget) setFormAbierto(false);
                         }}
                     >
-                        <div className="modal-dialog modal-lg modal-dialog-scrollable">
-                            <div className="modal-content">
-                                <div className="modal-header">
-                                    <h5 className="modal-title" id="titulo-form-pedido">
+                        <section
+                            className="pedidos-dialog"
+                            role="dialog"
+                            aria-modal="true"
+                            aria-labelledby="titulo-form-pedido"
+                        >
+                            <div className="pedidos-dialog-header">
+                                <div>
+                                    <span className="eyebrow">GESTIÓN DE PEDIDOS</span>
+                                    <h2 id="titulo-form-pedido">
                                         {pedidoSeleccionado
                                             ? `Pedido #${pedidoSeleccionado.idPedido}`
                                             : "Nuevo pedido"}
-                                    </h5>
-                                    <button
-                                        type="button"
-                                        className="btn-close"
-                                        aria-label="Cerrar"
-                                        onClick={() => setFormAbierto(false)}
-                                    />
+                                    </h2>
+                                    <p>Selecciona una mesa y agrega los productos solicitados.</p>
                                 </div>
-
-                                <div className="modal-body">
-                                    <PedidoForm
-                                        pedidoInicial={pedidoSeleccionado}
-                                        mesas={mesas}
-                                        productos={productos}
-                                        onPedidoActualizado={alActualizarPedido}
-                                    />
-                                </div>
+                                <button
+                                    type="button"
+                                    className="icon-button"
+                                    aria-label="Cerrar"
+                                    onClick={() => setFormAbierto(false)}
+                                >
+                                    <SiarIcon name="close" size="sm" />
+                                </button>
                             </div>
-                        </div>
+
+                            <div className="pedidos-modal-body">
+                                <PedidoForm
+                                    pedidoInicial={pedidoSeleccionado}
+                                    mesas={mesas}
+                                    productos={productos}
+                                    onPedidoActualizado={alActualizarPedido}
+                                />
+                            </div>
+                        </section>
                     </div>
-                    <div className="modal-backdrop fade show" />
-                </>
-            )}
+                )}
+            </main>
         </div>
     );
 }

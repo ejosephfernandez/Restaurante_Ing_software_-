@@ -1,0 +1,464 @@
+/* Lista de pedidos: extensión visual del sistema de diseño SIAR. */
+.pedidos-list-panel {
+    min-width: 0;
+    overflow: hidden;
+}
+
+.pedidos-list-header {
+    gap: 18px;
+    align-items: center;
+}
+
+.pedidos-list-header h2 {
+    margin: 7px 0 5px;
+}
+
+.pedidos-list-count {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 11px;
+    border: 1px solid #e2ebe4;
+    border-radius: 9px;
+    background: #f7faf7;
+    color: #52715d;
+    font-size: 10px;
+}
+
+.pedidos-list-count strong {
+    color: #245b3b;
+    font-family: Manrope, sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.pedidos-list-count span {
+    color: #829087;
+}
+
+.pedidos-list-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: flex-start;
+    gap: 12px;
+    border-bottom: 1px solid #edf0ed;
+}
+
+.pedidos-filter-field {
+    display: flex;
+    flex: 0 1 220px;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 170px;
+    color: #65746a;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.pedidos-filter-select {
+    width: 100%;
+    min-height: 37px;
+    padding: 0 32px 0 10px;
+    border: 1px solid #e1e8e2;
+    border-radius: 8px;
+    outline: 0;
+    appearance: auto;
+    background: #fff;
+    color: #405247;
+    font: inherit;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.pedidos-filter-select:focus {
+    border-color: #85b79a;
+    box-shadow: 0 0 0 3px rgba(65, 139, 94, .08);
+}
+
+.pedidos-clear-filters {
+    min-height: 37px;
+    margin-left: auto;
+}
+
+.pedidos-table-scroll {
+    min-width: 0;
+}
+
+.pedidos-table {
+    min-width: 1060px;
+}
+
+.pedidos-table th {
+    white-space: nowrap;
+}
+
+.pedidos-table td {
+    vertical-align: middle;
+}
+
+.pedidos-id-cell {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    white-space: nowrap;
+}
+
+.pedidos-id-cell > strong {
+    color: #34483b;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.pedidos-id-icon {
+    display: grid;
+    width: 31px;
+    height: 31px;
+    flex: 0 0 31px;
+    place-items: center;
+    border-radius: 9px;
+    background: #edf5ef;
+    color: #43805a;
+}
+
+.pedidos-table-main {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    white-space: nowrap;
+}
+
+.pedidos-table-main strong {
+    color: #3d5044;
+    font-size: 10.5px;
+}
+
+.pedidos-table-main small {
+    color: #9aa59d;
+    font-size: 9px;
+}
+
+.pedidos-date-cell {
+    color: #6e7c73 !important;
+    font-size: 10px !important;
+    white-space: nowrap;
+}
+
+.pedidos-number-cell {
+    text-align: right !important;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+
+.pedidos-center-cell {
+    text-align: center !important;
+}
+
+.pedidos-total-cell {
+    color: #365a42 !important;
+    font-size: 11px !important;
+    font-weight: 800;
+}
+
+.pedidos-status {
+    white-space: nowrap;
+}
+
+.pedidos-status-pending {
+    background: #fff3dc;
+    color: #9b6a22;
+}
+
+.pedidos-status-preparing {
+    background: #e9f2fc;
+    color: #4d729e;
+}
+
+.pedidos-status-ready {
+    background: #e6f5eb;
+    color: #2d8050;
+}
+
+.pedidos-status-delivered {
+    background: #edf0fa;
+    color: #5b6ea7;
+}
+
+.pedidos-status-billed {
+    background: #f0f2f0;
+    color: #67746b;
+}
+
+.pedidos-status-cancelled {
+    background: #fbeceb;
+    color: #a84e47;
+}
+
+.pedidos-status-unknown {
+    background: #f0f2f0;
+    color: #748077;
+}
+
+.pedidos-detail-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    min-width: 45px;
+    min-height: 29px;
+    padding: 4px 8px;
+    border: 1px solid #e2e9e3;
+    border-radius: 7px;
+    background: #fff;
+    color: #55715f;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.pedidos-detail-toggle:hover,
+.pedidos-detail-toggle.is-open {
+    border-color: #b9d5c1;
+    background: #f0f7f1;
+    color: #286344;
+}
+
+.pedidos-detail-toggle svg {
+    transition: transform .15s ease;
+}
+
+.pedidos-detail-toggle.is-open svg {
+    transform: rotate(180deg);
+}
+
+.pedidos-row-actions {
+    min-width: 250px;
+    flex-wrap: nowrap;
+    gap: 4px;
+}
+
+.pedidos-row-actions .action-button {
+    min-height: 29px;
+    padding: 6px 8px;
+    font-size: 9px;
+    white-space: nowrap;
+}
+
+.pedidos-action-products {
+    border-color: #e1e8e2;
+    background: #fff;
+    color: #56705e;
+}
+
+.pedidos-action-products:hover:not(:disabled) {
+    border-color: #c8ddce;
+    background: #f3f8f4;
+    color: #286344;
+}
+
+.pedidos-action-send {
+    border-color: #f0dfba;
+    background: #fff8e9;
+    color: #956a25;
+}
+
+.pedidos-action-send:hover:not(:disabled) {
+    border-color: #e7ce99;
+    background: #fff1d2;
+    color: #805719;
+}
+
+.pedidos-action-ready {
+    border-color: #d5eadc;
+    background: #eff8f1;
+    color: #2f7950;
+}
+
+.pedidos-action-ready:hover:not(:disabled) {
+    border-color: #b8dec4;
+    background: #e4f4e8;
+}
+
+.pedidos-action-deliver {
+    border-color: #dce5f3;
+    background: #f0f4fb;
+    color: #4d6d9a;
+}
+
+.pedidos-action-deliver:hover:not(:disabled) {
+    border-color: #c6d6ed;
+    background: #e5edf9;
+}
+
+.pedidos-row-expanded > td {
+    background: #f6faf7 !important;
+}
+
+.pedidos-detail-row > td {
+    padding: 0 !important;
+    background: #f8fbf8;
+}
+
+.pedidos-detail-panel {
+    margin: 0;
+    padding: 17px 21px 19px;
+    border-top: 1px solid #e4ece5;
+    border-bottom: 1px solid #e4ece5;
+    background: #f8fbf8;
+}
+
+.pedidos-detail-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 11px;
+}
+
+.pedidos-detail-heading > div {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.pedidos-detail-heading strong {
+    color: #354b3c;
+    font-size: 11px;
+}
+
+.pedidos-detail-heading span:not(.pedidos-detail-count) {
+    color: #8b988f;
+    font-size: 9px;
+}
+
+.pedidos-detail-count {
+    flex: 0 0 auto;
+    padding: 5px 8px;
+    border-radius: 20px;
+    background: #e8f1ea;
+    color: #52735c;
+    font-size: 9px;
+    font-weight: 700;
+}
+
+.pedidos-detail-table {
+    width: 100%;
+    min-width: 650px;
+    border-collapse: collapse;
+    background: #fff;
+    font-size: 10px;
+}
+
+.pedidos-detail-table th {
+    padding: 9px 11px;
+    border-bottom: 1px solid #e8eee9;
+    background: #f1f6f2;
+    color: #829087;
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: .55px;
+    white-space: nowrap;
+}
+
+.pedidos-detail-table td {
+    padding: 10px 11px;
+    border-bottom: 1px solid #edf1ed;
+    color: #59695f;
+    vertical-align: middle;
+}
+
+.pedidos-detail-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.pedidos-detail-table td strong {
+    color: #405347;
+    font-size: 10px;
+}
+
+.pedidos-detail-subtotal {
+    color: #315e41 !important;
+    font-weight: 700;
+}
+
+.pedidos-detail-observation {
+    color: #89958d !important;
+    font-size: 9px !important;
+}
+
+.pedidos-detail-empty {
+    padding: 17px;
+    border: 1px dashed #dfe7e1;
+    border-radius: 8px;
+    color: #89958d;
+    font-size: 10px;
+    text-align: center;
+}
+
+.pedidos-empty-state {
+    min-height: 205px;
+}
+
+.pedidos-list-footer {
+    min-height: 48px;
+    height: auto;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    gap: 12px;
+}
+
+@media (max-width: 900px) {
+    .pedidos-list-header {
+        align-items: flex-start;
+    }
+
+    .pedidos-list-toolbar {
+        align-items: stretch;
+    }
+
+    .pedidos-filter-field {
+        flex: 1 1 190px;
+    }
+
+    .pedidos-clear-filters {
+        margin-left: 0;
+    }
+}
+
+@media (max-width: 600px) {
+    .pedidos-list-header {
+        padding: 17px 15px;
+    }
+
+    .pedidos-list-header h2 {
+        font-size: 14px;
+    }
+
+    .pedidos-list-count {
+        padding: 7px;
+        gap: 5px;
+    }
+
+    .pedidos-list-toolbar {
+        padding: 13px;
+    }
+
+    .pedidos-filter-field {
+        flex-basis: 100%;
+        min-width: 0;
+    }
+
+    .pedidos-clear-filters {
+        align-self: flex-start;
+    }
+
+    .pedidos-detail-panel {
+        padding: 14px;
+    }
+
+    .pedidos-list-footer {
+        align-items: flex-start;
+        flex-direction: column;
+        justify-content: center;
+    }
+}
