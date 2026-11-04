@@ -1,0 +1,300 @@
+/* Módulo Pedidos: reutiliza tokens y componentes globales del sistema SIAR. */
+.pedidos-module {
+    width: 100%;
+    min-width: 0;
+    min-height: 100%;
+    color: var(--siar-text, #26392d);
+}
+
+.pedidos-page-content {
+    padding-bottom: 32px;
+}
+
+.pedidos-page-content .page-heading {
+    margin-bottom: 22px;
+}
+
+.pedidos-page-content .page-heading h1 {
+    margin-bottom: 7px;
+}
+
+.pedidos-stats-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 22px;
+}
+
+.pedido-stat-card {
+    min-height: 112px;
+    padding: 16px 17px;
+}
+
+.pedido-stat-card .stat-value {
+    font-variant-numeric: tabular-nums;
+}
+
+.pedidos-connection-alert {
+    margin-bottom: 17px;
+}
+
+.pedidos-alert-close {
+    flex: 0 0 auto;
+}
+
+.pedidos-toast {
+    gap: 10px;
+}
+
+.pedidos-list-shell {
+    min-width: 0;
+}
+
+/* Armoniza los controles Bootstrap que pueden utilizar PedidosList y PedidoForm. */
+.pedidos-module .card {
+    border: 1px solid #e6ebe7;
+    border-radius: 13px;
+    box-shadow: 0 5px 18px rgba(22, 48, 35, .035);
+}
+
+.pedidos-module .card-header {
+    border-bottom: 1px solid #edf0ed;
+    background: #fff;
+    color: #26392d;
+    font-weight: 700;
+}
+
+.pedidos-module .form-control,
+.pedidos-module .form-select {
+    min-height: 38px;
+    border-color: #dfe6e0;
+    border-radius: 8px;
+    color: #33443a;
+    font-size: 12px;
+    box-shadow: none;
+}
+
+.pedidos-module .form-control:focus,
+.pedidos-module .form-select:focus {
+    border-color: #68a880;
+    box-shadow: 0 0 0 3px rgba(54, 130, 78, .1);
+}
+
+.pedidos-module .btn-primary {
+    border-color: #1e6045;
+    background: #1e6045;
+}
+
+.pedidos-module .btn-primary:hover,
+.pedidos-module .btn-primary:focus {
+    border-color: #184b36;
+    background: #184b36;
+}
+
+.pedidos-module .btn-outline-primary {
+    border-color: #1e6045;
+    color: #1e6045;
+}
+
+.pedidos-module .btn-outline-primary:hover {
+    border-color: #1e6045;
+    background: #1e6045;
+    color: #fff;
+}
+
+.pedidos-module .table {
+    --bs-table-color: #526158;
+    --bs-table-border-color: #eef1ee;
+    font-size: 11.5px;
+}
+
+.pedidos-module .table thead th {
+    background: #f8faf8;
+    color: #929d95;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: .65px;
+    white-space: nowrap;
+}
+
+.pedidos-module .table > :not(caption) > * > * {
+    padding: 11px 14px;
+    vertical-align: middle;
+}
+
+.pedidos-module .badge {
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 6px 9px;
+}
+
+/* =====================================================
+   MODAL DE PEDIDOS
+   Clases propias para evitar conflictos con Bootstrap.
+   ===================================================== */
+
+.pedidos-modal-overlay,
+.pedidos-modal-backdrop {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 2000 !important;
+
+    display: grid !important;
+    place-items: center;
+
+    overflow-y: auto;
+    padding: 20px;
+
+    background: rgba(11, 27, 18, 0.48) !important;
+    backdrop-filter: blur(3px);
+}
+
+/* Ventana principal del formulario */
+.pedidos-dialog,
+.pedidos-modal {
+    position: relative !important;
+    inset: auto !important;
+    top: auto !important;
+    left: auto !important;
+    z-index: 1 !important;
+
+    display: flex !important;
+    flex-direction: column;
+
+    width: min(100%, 900px) !important;
+    height: auto !important;
+    max-height: calc(100vh - 40px);
+    margin: auto !important;
+
+    overflow: hidden;
+    padding: 23px 25px 0;
+
+    border: 1px solid #e6ebe7;
+    border-radius: 16px;
+    background: #ffffff !important;
+    color: #26392d;
+
+    box-shadow: 0 22px 90px rgba(12, 32, 20, 0.25);
+
+    visibility: visible !important;
+    opacity: 1 !important;
+    transform: none !important;
+
+    animation: modal-in 0.17s ease-out;
+}
+
+/* Encabezado del modal */
+.pedidos-dialog-header,
+.pedidos-modal .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 15px;
+
+    flex: 0 0 auto;
+    margin: 0 0 17px;
+    padding: 0;
+
+    border: 0;
+    background: transparent;
+}
+
+.pedidos-dialog-header h2,
+.pedidos-modal .modal-header h2 {
+    margin: 8px 0 6px;
+    color: #21392b;
+    font-family: Manrope, sans-serif;
+    font-size: 21px;
+    letter-spacing: -0.6px;
+}
+
+.pedidos-dialog-header p,
+.pedidos-modal .modal-header p {
+    margin: 0;
+    color: #87948b;
+    font-size: 11px;
+}
+
+/* Cuerpo desplazable del formulario */
+.pedidos-modal-body {
+    min-height: 0;
+    overflow-y: auto;
+    padding: 0 0 22px;
+}
+
+.pedidos-modal-body .container-fluid {
+    padding-right: 0;
+    padding-left: 0;
+}
+
+/* Botones internos del formulario */
+.pedidos-modal-body .btn {
+    border-radius: 8px;
+    font-size: 11.5px;
+    font-weight: 700;
+}
+
+/* =====================================================
+   RESPONSIVE
+   ===================================================== */
+
+@media (max-width: 1180px) {
+    .pedidos-stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 760px) {
+
+    .pedidos-module .topbar {
+        padding: 0 15px;
+    }
+
+    .pedidos-module .environment-pill {
+        display: none;
+    }
+
+    .pedidos-page-content {
+        padding: 21px 14px 24px;
+    }
+
+    .pedidos-page-content .page-heading {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .pedidos-page-content .page-heading h1 {
+        font-size: 26px;
+    }
+
+    .pedidos-stats-grid {
+        gap: 9px;
+    }
+
+    .pedido-stat-card {
+        min-height: 100px;
+        padding: 13px;
+    }
+
+    .pedido-stat-card .stat-value {
+        font-size: 23px;
+    }
+
+    .pedidos-dialog,
+    .pedidos-modal {
+        padding: 19px 18px 0;
+        max-height: calc(100vh - 24px);
+    }
+
+    .pedidos-modal-overlay,
+    .pedidos-modal-backdrop {
+        padding: 12px;
+    }
+}
+
+@media (max-width: 390px) {
+    .pedidos-stats-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}

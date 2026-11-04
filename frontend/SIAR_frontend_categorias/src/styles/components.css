@@ -352,3 +352,74 @@
 
 /* Iconografía unificada para todas las interfaces. */
 .siar-icon { display: inline-block; flex: 0 0 auto; vertical-align: middle; color: currentColor; }
+
+/* =====================================================
+   CORRECCIÓN GLOBAL DE MODALES SIAR
+   Evita conflictos con la clase .modal de Bootstrap.
+   ===================================================== */
+
+.modal-backdrop {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 2000 !important;
+
+    display: grid !important;
+    place-items: center !important;
+
+    padding: 20px;
+    overflow-y: auto;
+
+    background: rgba(11, 27, 18, 0.48) !important;
+    backdrop-filter: blur(3px);
+}
+
+/* Fuerza la visibilidad de las ventanas de los módulos SIAR */
+.modal-backdrop > .modal {
+    display: block !important;
+
+    position: relative !important;
+    inset: auto !important;
+
+    height: auto !important;
+    max-height: calc(100vh - 40px);
+
+    margin: auto !important;
+    overflow-y: auto !important;
+
+    visibility: visible !important;
+    opacity: 1 !important;
+    transform: none !important;
+
+    z-index: 1 !important;
+
+    background: #ffffff !important;
+}
+
+/* Anchura de cada formulario */
+.modal-backdrop > .modal.product-modal {
+    width: min(100%, 650px) !important;
+}
+
+.modal-backdrop > .modal.mesa-modal {
+    width: min(100%, 560px) !important;
+}
+
+.modal-backdrop > .modal.reserva-modal {
+    width: min(100%, 650px) !important;
+}
+
+.modal-backdrop > .modal.reserva-detail-modal {
+    width: min(100%, 560px) !important;
+}
+
+/* Adaptación a pantallas pequeñas */
+@media (max-width: 760px) {
+    .modal-backdrop {
+        padding: 12px !important;
+    }
+
+    .modal-backdrop > .modal {
+        max-height: calc(100vh - 24px);
+        padding: 19px;
+    }
+}
