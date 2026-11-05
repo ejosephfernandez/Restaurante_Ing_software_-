@@ -3,6 +3,7 @@ import { mesasService } from "../services/mesasService.js";
 import "../../../styles/mesas.css";
 import SiarIcon from "../../../components/ui/SiarIcon.jsx";
 
+import UsuarioActual from "../../../components/ui/UsuarioActual.jsx";
 const FORM_VACIO = {
   numero: "",
   capacidad: "4",
@@ -235,13 +236,7 @@ export default function MesasPage() {
         </div>
         <div className="topbar-right">
           <span className="environment-pill"><span /> Entorno local</span>
-          <div className="profile-block">
-            <div className="avatar">AD</div>
-            <div className="profile-details">
-              <strong>Administrador</strong>
-              <small>Administrador</small>
-            </div>
-          </div>
+          <UsuarioActual />
         </div>
       </header>
 
