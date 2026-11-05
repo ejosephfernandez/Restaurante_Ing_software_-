@@ -55,8 +55,15 @@
 
 .admin-navigation {
     display: flex;
+    flex: 1;
+    min-height: 0;
     flex-direction: column;
     gap: 8px;
+    /* En pantallas bajas el menú hace scroll y el pie (usuario y
+       cerrar sesión) queda siempre visible al fondo de la barra */
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgb(255 255 255 / 25%) transparent;
 }
 
 .admin-nav-disabled,
@@ -241,6 +248,7 @@
     }
 
     .admin-navigation {
+        overflow: visible;
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 5px;
