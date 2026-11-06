@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { categoriasApi } from '../services/categoriasApi.js';
 import '../../../styles/categorias.css';
 import SiarIcon from '../../../components/ui/SiarIcon.jsx';
+import UsuarioActual from "../../../components/ui/UsuarioActual.jsx";
 const Icon = SiarIcon;
 
 const EMPTY_FORM = { nombre: '', activa: true };
@@ -212,13 +213,7 @@ export default function CategoriasPage() {
           <button className="topbar-notification" type="button" aria-label="Notificaciones" title="Notificaciones">
             <span aria-hidden="true">♧</span><i />
           </button>
-          <div className="profile-block">
-            <div className="avatar">AD</div>
-            <div className="profile-details">
-              <strong>Administrador</strong>
-              <small>Administrador</small>
-            </div>
-          </div>
+          <UsuarioActual />
         </div>
       </header>
 

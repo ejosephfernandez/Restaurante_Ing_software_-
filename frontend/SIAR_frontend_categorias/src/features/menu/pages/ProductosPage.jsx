@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
-import { productoService } from "../services/productoService.js";
+import { productoService } from "../services/ProductoService.js";
 import "../../../styles/productos.css";
 import SiarIcon from "../../../components/ui/SiarIcon.jsx";
 
+import UsuarioActual from "../../../components/ui/UsuarioActual.jsx";
 const FORM_VACIO = {
   nombre: "",
   descripcion: "",
@@ -303,13 +304,7 @@ export default function ProductosPage() {
           <span className="environment-pill">
             <span /> Entorno local
           </span>
-          <div className="profile-block">
-            <div className="avatar">AD</div>
-            <div className="profile-details">
-              <strong>Administrador</strong>
-              <small>Administrador</small>
-            </div>
-          </div>
+          <UsuarioActual />
         </div>
       </header>
 
