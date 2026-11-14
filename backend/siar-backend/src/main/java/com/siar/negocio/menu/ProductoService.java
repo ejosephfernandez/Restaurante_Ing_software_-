@@ -2,6 +2,7 @@ package com.siar.negocio.menu;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.EnumSet;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -12,16 +13,20 @@ import com.siar.persistencia.menu.Categoria;
 import com.siar.persistencia.menu.CategoriaRepository;
 import com.siar.persistencia.menu.Producto;
 import com.siar.persistencia.menu.ProductoRepository;
+import com.siar.persistencia.pedidos.DetallePedidoRepository;
+import com.siar.persistencia.pedidos.EstadoPedido;
 
 @Service 
 @Transactional(readOnly = true)
 public class ProductoService {
     private final ProductoRepository productoRepository;
     private final CategoriaRepository categoriaRepository;
+    private final DetallePedidoRepository detallePedidoRepository;
 
-    public ProductoService (ProductoRepository productoRepository, CategoriaRepository categoriaRepository){
+    public ProductoService (ProductoRepository productoRepository, CategoriaRepository categoriaRepository, DetallePedidoRepository detallePedidoRepository){
         this.productoRepository = productoRepository;
         this.categoriaRepository = categoriaRepository;
+        this.detallePedidoRepository = detallePedidoRepository;
     }
 
     // Consultar todos los productos.
@@ -106,6 +111,12 @@ public class ProductoService {
         existente.setCategoria(categoria);
 
         if (datos.getActivo() != null) {
+
+            if (!datos.getActivo()) {
+                validarSinPedidosActivos(id);
+                existente.setDisponible(false);
+            }
+
             existente.setActivo(datos.getActivo());
         }
 
@@ -143,14 +154,16 @@ public class ProductoService {
 
     // Desactivación lógica.
     @Transactional
-    public void desactivar(Long id) {
-        Producto producto = obtenerPorId(id);
+public void desactivar(Long id) {
+    Producto producto = obtenerPorId(id);
 
-        producto.setActivo(false);
-        producto.setDisponible(false);
+    validarSinPedidosActivos(id);
 
-        productoRepository.save(producto);
-    }
+    producto.setActivo(false);
+    producto.setDisponible(false);
+
+    productoRepository.save(producto);
+}
 
     private void validarDatos(Producto producto) {
         if (producto == null) {
@@ -204,5 +217,32 @@ public class ProductoService {
 
         return categoria;
     }
+
+
+private void validarSinPedidosActivos(Long idProducto) {
+
+    EnumSet<EstadoPedido> estadosActivos = EnumSet.of(
+            EstadoPedido.PENDIENTE,
+            EstadoPedido.EN_PREPARACION,
+            EstadoPedido.LISTO,
+            EstadoPedido.ENTREGADO
+    );
+
+    boolean tienePedidosActivos =
+            detallePedidoRepository
+                    .existsByProducto_IdProductoAndPedido_EstadoIn(
+                            idProducto,
+                            estadosActivos
+                    );
+
+    if (tienePedidosActivos) {
+        throw new ResponseStatusException(
+                HttpStatus.CONFLICT,
+                "No se puede desactivar el producto porque "
+                + "está asociado a un pedido activo."
+        );
+    }
+}
+
 
 }
