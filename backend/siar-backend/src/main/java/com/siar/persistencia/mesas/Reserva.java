@@ -1,7 +1,6 @@
 package com.siar.persistencia.mesas;
 
 import java.time.LocalDateTime;
-import org.hibernate.annotations.CreationTimestamp;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -25,10 +24,9 @@ public class Reserva {
     @JoinColumn(name = "id_mesa", nullable = false)
     private Mesa mesa;
 
-    @CreationTimestamp // hace que Hibernate ponga la fecha y hora actual automáticamente al insertar
-                       // el registro
-
-    @Column(name = "fecha_hora", nullable = false, updatable = false)
+    // La fecha la define el cliente/servicio; Hibernate no debe sobrescribirla
+    // ni impedir que se actualice al editar la reserva.
+    @Column(name = "fecha_hora", nullable = false)
     private LocalDateTime fechaHora;
 
     @Column(name = "nombre_cliente", length = 100)

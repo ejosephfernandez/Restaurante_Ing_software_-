@@ -6,7 +6,7 @@ Este documento resume qué parte de los requisitos del proyecto ya está constru
 - **Vista (frontend):** pantallas en React que usa el personal del restaurante.
 
 > **Corte:** 4 de noviembre de 2026.
-> Se incorporan los avances de interfaz de los módulos de mesas, reservas y pedidos, además de las vistas de menú que ya estaban construidas.
+> Se incorporan los avances de interfaz de los módulos de mesas, reservas y pedidos, además de las vistas de menú que ya estaban construidas. Incluye los módulos de pedidos y facturación del PR #16 (feature/facturacion), pendiente de merge a develop.
 
 Leyenda: ✅ completo · 🟡 parcial · ❌ pendiente · ⛔ fuera del alcance actual
 
@@ -20,13 +20,13 @@ Leyenda: ✅ completo · 🟡 parcial · ❌ pendiente · ⛔ fuera del alcance 
 |---|---|---|
 | 1. Gestión de usuarios | 🟡 Login y roles; falta CRUD de usuarios | ❌ Ninguna (ni login) |
 | 2. Gestión de menú | ✅ Completa (1 detalle pendiente) | 🟡 Categorías y productos, sin login |
-| 3. Gestión de mesas y reservas | 🟡 CRUD listo; faltan validaciones de reservas | ✅ Mesas y reservas construidas |
+| 3. Gestión de mesas y reservas | ✅ CRUD completo con validaciones de reservas y estados de mesa | ✅ Mesas y reservas construidas |
 | 4. Gestión de pedidos | ✅ Completa | ✅ Listado, formulario y acciones de pedidos |
 | 5. Gestión de inventario | ⛔ Fuera del alcance actual | ⛔ |
 | 6. Facturación | ✅ Completa en lo esencial | ❌ Ninguna |
 | 7. Reportes | ❌ Pendiente | ❌ Pendiente |
 
-**Historias de usuario (33) evaluadas por la API:** 16 completas, 8 parciales, 8 pendientes y 1 fuera de alcance (HU31, inventario).
+**Historias de usuario (33) evaluadas por la API:** 18 completas, 6 parciales, 8 pendientes y 1 fuera de alcance (HU31, inventario).
 **Por vistas:** HU08 a HU12 (menú), HU13 a HU17 (mesas y reservas) y HU18 a HU23 (pedidos) cuentan con interfaz.
 
 ### ⚠️ Bloqueo actual entre API y vistas
@@ -78,8 +78,8 @@ La columna "Observaciones" se refiere a la API.
 | HU13 | Crear mesa | ✅ | ✅ | Número no duplicado, campos obligatorios, estado inicial DISPONIBLE. La interfaz permite gestionar las mesas. |
 | HU14 | Modificar mesa | ✅ | ✅ | Valida que el nuevo número no esté en uso. La interfaz incluye la gestión de los datos de las mesas. |
 | HU15 | Consultar estado de mesas | ✅ | ✅ | Listado visual de mesas y consulta de su estado. |
-| HU16 | Reservar mesa | 🟡 | ✅ | La interfaz permite gestionar reservas. La API cuenta con CRUD, confirmación y cancelación, con permisos por rol. **Falta** validar choques de horario y pasar la mesa a RESERVADA al confirmar. |
-| HU17 | Liberar mesa | 🟡 | ✅ | La interfaz permite gestionar el estado de las mesas. **Falta** validar que el estado enviado por la API sea uno de los permitidos (hoy acepta cualquier texto). |
+| HU16 | Reservar mesa | ✅ | ✅ | La interfaz permite gestionar reservas. La API cuenta con CRUD, confirmación y cancelación, con permisos por rol; valida choques de horario (margen de 60 min) y cambia automáticamente el estado de la mesa a RESERVADA al confirmar. |
+| HU17 | Liberar mesa | ✅ | ✅ | La interfaz permite gestionar el estado de las mesas. La API valida estrictamente que el estado enviado sea uno de los permitidos (DISPONIBLE, OCUPADA, RESERVADA, INACTIVA). |
 
 ### Módulo 4. Gestión de pedidos
 
@@ -176,10 +176,9 @@ Las interfaces de menú, mesas, reservas y pedidos ya están construidas. Las vi
 
 **API (backend):**
 1. **Gestión de usuarios** (HU01–HU03) con asignación de rol (HU04).
-2. **Completar reservas** (HU16): validar choques de horario y pasar la mesa a RESERVADA; validar los estados de mesa (HU17).
-3. **Reportes** (HU29, HU30, HU32, HU33) sobre los datos que ya se registran.
-4. Bloquear la baja de productos que estén en pedidos activos (HU10).
-5. Recuperación de contraseña (HU07) y auditoría (RNF06).
+2. **Reportes** (HU29, HU30, HU32, HU33) sobre los datos que ya se registran.
+3. Bloquear la baja de productos que estén en pedidos activos (HU10).
+4. Recuperación de contraseña (HU07) y auditoría (RNF06).
 
 ## 8. Cómo probar el MVP (API)
 
