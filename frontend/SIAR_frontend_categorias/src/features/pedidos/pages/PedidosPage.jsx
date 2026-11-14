@@ -6,6 +6,7 @@ import { pedidoService } from "../services/pedidoService.js";
 import SiarIcon from "../../../components/ui/SiarIcon.jsx";
 import "../../../styles/pedidos.css";
 
+import UsuarioActual from "../../../components/ui/UsuarioActual.jsx";
 /**
  * Página del módulo de pedidos.
  * Conserva la lógica de negocio existente y utiliza el sistema visual global SIAR.
@@ -211,13 +212,7 @@ export default function PedidosPage() {
                     <span className="environment-pill">
                         <span /> Entorno local
                     </span>
-                    <div className="profile-block">
-                        <div className="avatar">AD</div>
-                        <div className="profile-details">
-                            <strong>Administrador</strong>
-                            <small>Administrador</small>
-                        </div>
-                    </div>
+                    <UsuarioActual />
                 </div>
             </header>
 

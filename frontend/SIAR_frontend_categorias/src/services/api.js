@@ -1,14 +1,23 @@
+import {
+    EVENTO_SESION_EXPIRADA,
+    limpiarSesion,
+    obtenerToken
+} from "../features/auth/sesionStorage.js";
+
 const API_BASE_URL = "/api";
 
+// options.autenticado = false: no envía el token (lo usa el login, porque un
+// token viejo o inválido haría que Spring Security rechace la petición).
 export async function apiRequest(endpoint, options = {}) {
-    const token = localStorage.getItem("siar_token");
+    const { autenticado = true, ...opcionesFetch } = options;
+    const token = autenticado ? obtenerToken() : null;
 
     const headers = {
         Accept: "application/json",
-        ...options.headers
+        ...opcionesFetch.headers
     };
 
-    if (options.body && !headers["Content-Type"]) {
+    if (opcionesFetch.body && !headers["Content-Type"]) {
         headers["Content-Type"] = "application/json";
     }
 
@@ -20,7 +29,7 @@ export async function apiRequest(endpoint, options = {}) {
 
     try {
         response = await fetch(`${API_BASE_URL}${endpoint}`, {
-            ...options,
+            ...opcionesFetch,
             headers
         });
     } catch {
@@ -28,6 +37,14 @@ export async function apiRequest(endpoint, options = {}) {
             "No se pudo conectar con el backend. " +
             "Verifica que Spring Boot esté ejecutándose."
         );
+    }
+
+    // Token vencido o inválido: se cierra la sesión y AuthContext
+    // redirige al login. Solo si el token rechazado sigue siendo el guardado:
+    // así una respuesta tardía no cierra una sesión nueva.
+    if (response.status === 401 && token && obtenerToken() === token) {
+        limpiarSesion();
+        window.dispatchEvent(new Event(EVENTO_SESION_EXPIRADA));
     }
 
     // Manejar respuestas sin contenido
@@ -55,9 +72,11 @@ export async function apiRequest(endpoint, options = {}) {
                   datos.detail
                 : datos;
 
-        throw new Error(
+        const error = new Error(
             detalle || `Error HTTP ${response.status}`
         );
+        error.status = response.status;
+        throw error;
     }
 
     return datos;

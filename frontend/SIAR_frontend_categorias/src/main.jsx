@@ -9,11 +9,14 @@ import "./styles/global.css";
 import "./styles/components.css";
 
 import App from "./App.jsx";
+import { AuthProvider } from "./features/auth/context/AuthContext.jsx";
 
 createRoot(document.getElementById("root")).render(
     <React.StrictMode>
         <BrowserRouter>
-            <App />
+            <AuthProvider>
+                <App />
+            </AuthProvider>
         </BrowserRouter>
     </React.StrictMode>
 );

@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>MVP de SIAR</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Manrope:wght@600;700;800&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: banda verde de la barra lateral de SIAR arriba; debajo, una columna de reporte
+   con barras de avance a escala (33 historias), tablas por módulo y bloqueos al final.
+   Paleta y tipografía tomadas de frontend/src/styles/tokens.css del proyecto. */
+:root {
+  --bg: #f6f8f6;
+  --surface: #ffffff;
+  --ink: #1d2a24;
+  --ink-heading: #20382b;
+  --ink-soft: #536258;
+  --ink-mute: #77847d;
+  --line: #e2e9e3;
+  --brand: #1e6045;
+  --brand-deep: #07513e;
+  --brand-soft: #e5f3eb;
+  --band-1: #07513e;
+  --band-2: #023d2f;
+  --band-ink: #ecf5ef;
+  --band-mute: #bfd6c9;
+  --band-chip: rgb(255 255 255 / 10%);
+  --ok: #318354;
+  --ok-bg: #e7f6ed;
+  --part: #b77b25;
+  --part-bg: #fff2de;
+  --bad: #a84444;
+  --bad-bg: #fff1f1;
+  --none: #858e87;
+  --none-bg: #eef1ee;
+  --out: #557eaf;
+  --out-bg: #e8f1fc;
+  --font-display: "Manrope", "Segoe UI", system-ui, sans-serif;
+  --font-body: "DM Sans", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  --radius: 12px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1a15; --surface: #15231c; --ink: #e2ece5; --ink-heading: #eef6f0; --ink-soft: #a9bcb0; --ink-mute: #8a9c91;
+    --line: #26372e; --brand: #8fd3ad; --brand-deep: #a8dfc2; --brand-soft: #1d3a2b;
+    --band-1: #0a3a2c; --band-2: #062a20; --band-ink: #ecf5ef; --band-mute: #a9c7b8; --band-chip: rgb(255 255 255 / 8%);
+    --ok: #7fcf9d; --ok-bg: #173a27; --part: #e6b46a; --part-bg: #3a2d16; --bad: #f09a9a; --bad-bg: #3d1d1d;
+    --none: #9aa69e; --none-bg: #222e27; --out: #9dbbe4; --out-bg: #1c2a3d;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1a15; --surface: #15231c; --ink: #e2ece5; --ink-heading: #eef6f0; --ink-soft: #a9bcb0; --ink-mute: #8a9c91;
+  --line: #26372e; --brand: #8fd3ad; --brand-deep: #a8dfc2; --brand-soft: #1d3a2b;
+  --band-1: #0a3a2c; --band-2: #062a20; --band-ink: #ecf5ef; --band-mute: #a9c7b8; --band-chip: rgb(255 255 255 / 8%);
+  --ok: #7fcf9d; --ok-bg: #173a27; --part: #e6b46a; --part-bg: #3a2d16; --bad: #f09a9a; --bad-bg: #3d1d1d;
+  --none: #9aa69e; --none-bg: #222e27; --out: #9dbbe4; --out-bg: #1c2a3d;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.55; }
+a { color: var(--brand); }
+a:focus-visible, button:focus-visible { outline: 3px solid color-mix(in srgb, var(--brand) 45%, transparent); outline-offset: 2px; border-radius: 6px; }
+h1, h2, h3 { font-family: var(--font-display); color: var(--ink-heading); text-wrap: balance; margin: 0; }
+.wrap { max-width: 1080px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+
+/* ---- banda superior ---- */
+.band { background: linear-gradient(160deg, var(--band-1), var(--band-2) 70%); color: var(--band-ink); }
+.band .wrap { padding-block: 34px 30px; display: grid; gap: 22px; }
+.brand { display: flex; align-items: center; gap: 12px; }
+.logo { width: 44px; height: 44px; border-radius: 12px; background: #e4f5eb; color: #07513e; display: grid; place-items: center; font-size: 28px; font-weight: 800; flex-shrink: 0; }
+.brand strong { font-family: var(--font-display); font-size: 22px; letter-spacing: -0.5px; display: block; line-height: 1.1; }
+.brand span { color: var(--band-mute); font-size: 12.5px; }
+.band h1 { color: #fff; font-size: clamp(28px, 4.4vw, 42px); letter-spacing: -1px; line-height: 1.1; max-width: 22ch; }
+.band p.lead { margin: 0; color: var(--band-mute); max-width: 62ch; font-size: 16px; }
+.meta { display: flex; flex-wrap: wrap; gap: 8px; }
+.meta span { background: var(--band-chip); border-radius: 999px; padding: 5px 12px; font-size: 12.5px; color: var(--band-ink); }
+
+main.wrap { padding-block: 32px 48px; display: grid; gap: 40px; }
+section { display: grid; gap: 16px; min-width: 0; }
+.eyebrow { font-size: 11.5px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--brand); }
+h2 { font-size: 23px; letter-spacing: -0.4px; }
+.sub { margin: 0; color: var(--ink-soft); max-width: 70ch; }
+
+/* ---- barras de avance a escala ---- */
+.progress-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; display: grid; gap: 20px; }
+.track-row { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 16px; align-items: center; }
+.track-label strong { display: block; font-family: var(--font-display); font-size: 15px; color: var(--ink-heading); }
+.track-label span { font-size: 12.5px; color: var(--ink-mute); }
+.track { display: flex; height: 34px; border-radius: 8px; overflow: hidden; background: var(--none-bg); }
+.seg { display: grid; place-items: center; font-size: 12.5px; font-weight: 700; min-width: 0; font-variant-numeric: tabular-nums; }
+.seg.ok { background: var(--ok); color: var(--surface); }
+.seg.part { background: var(--part); color: var(--surface); }
+.seg.none { background: var(--none-bg); color: var(--ink-mute); }
+.seg.out { background: var(--out-bg); color: var(--out); }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 13px; color: var(--ink-soft); }
+.legend i { display: inline-block; width: 11px; height: 11px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+
+/* ---- tarjetas de módulo ---- */
+.modules { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
+.module { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; display: grid; gap: 12px; align-content: start; }
+.module h3 { font-size: 16.5px; }
+.module-rows { display: grid; gap: 8px; }
+.module-row { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 10px; align-items: start; font-size: 14px; }
+.module-row b { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-mute); padding-top: 3px; }
+.module-row p { margin: 0; color: var(--ink-soft); }
+
+.pill { display: inline-flex; align-items: center; gap: 6px; border-radius: 999px; padding: 2px 10px; font-size: 12px; font-weight: 700; white-space: nowrap; }
+.pill::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.pill.ok { background: var(--ok-bg); color: var(--ok); }
+.pill.part { background: var(--part-bg); color: var(--part); }
+.pill.none { background: var(--none-bg); color: var(--none); }
+.pill.out { background: var(--out-bg); color: var(--out); }
+.pill.bad { background: var(--bad-bg); color: var(--bad); }
+
+/* ---- flujo del pedido ---- */
+.flow { display: flex; flex-wrap: wrap; gap: 8px; align-items: stretch; }
+.step { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; display: grid; gap: 6px; flex: 1 1 150px; min-width: 0; }
+.step strong { font-family: var(--font-display); font-size: 14px; color: var(--ink-heading); }
+.step code { font-family: var(--font-mono); font-size: 11.5px; color: var(--ink-mute); }
+.step .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+
+/* ---- tabla de historias ---- */
+.toolbar { display: flex; flex-wrap: wrap; gap: 8px; }
+.toolbar button { font: inherit; font-size: 13.5px; font-weight: 600; border: 1px solid var(--line); background: var(--surface); color: var(--ink-soft); border-radius: 999px; padding: 6px 14px; cursor: pointer; }
+.toolbar button[aria-pressed="true"] { background: var(--brand); border-color: var(--brand); color: var(--surface); }
+.table-scroll { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
+table { border-collapse: collapse; width: 100%; min-width: 720px; font-size: 14px; }
+th { text-align: left; font-size: 11.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-mute); font-weight: 700; padding: 12px 14px; border-bottom: 1px solid var(--line); background: var(--surface); }
+td { padding: 11px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+tr.group td { background: var(--brand-soft); color: var(--brand-deep); font-family: var(--font-display); font-weight: 700; font-size: 13.5px; padding-block: 8px; }
+tr:last-child td { border-bottom: 0; }
+td.hu { font-family: var(--font-mono); font-size: 12.5px; color: var(--ink-mute); white-space: nowrap; }
+td.note { color: var(--ink-soft); }
+.empty { padding: 18px; color: var(--ink-mute); text-align: center; }
+
+/* ---- matriz y bloqueos ---- */
+.split { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; display: grid; gap: 14px; align-content: start; min-width: 0; }
+.panel h3 { font-size: 17px; }
+.mini th, .mini td { padding: 8px 10px; }
+.mini table { min-width: 0; }
+.num { text-align: right; font-variant-numeric: tabular-nums; }
+.blockers { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.blockers li { display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 10px; }
+.blockers .n { width: 26px; height: 26px; border-radius: 8px; background: var(--bad-bg); color: var(--bad); display: grid; place-items: center; font-weight: 700; font-size: 13px; }
+.blockers.next .n { background: var(--brand-soft); color: var(--brand-deep); }
+.blockers p { margin: 0; color: var(--ink-soft); font-size: 14px; }
+.blockers strong { color: var(--ink); }
+code { font-family: var(--font-mono); font-size: 0.86em; }
+
+footer.wrap { padding-block: 0 40px; color: var(--ink-mute); font-size: 13px; display: grid; gap: 6px; }
+
+@media (max-width: 640px) {
+  .track-row { grid-template-columns: 1fr; gap: 8px; }
+  .seg { font-size: 11px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .seg { transition: filter .15s; }
+  .seg:hover { filter: brightness(1.06); }
+}
+</style>
+</head>
+<body>
+
+<header class="band">
+  <div class="wrap">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">✣</div>
+      <div><strong>SIAR</strong><span>Sistema Integral de Administración para Restaurantes</span></div>
+    </div>
+    <h1>Estado del MVP: la API está lista, faltan vistas</h1>
+    <p class="lead">El backend ya cubre el ciclo completo del restaurante, de la mesa al comprobante, con login y permisos por rol. En la interfaz ya funcionan login, menú, mesas y pedidos; faltan facturación, usuarios y reportes, y reservas tiene fallos por corregir.</p>
+    <div class="meta">
+      <span>Corte: 5 de noviembre de 2026</span>
+      <span>Rama de referencia: develop + PR #22</span>
+      <span>33 historias de usuario</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section aria-labelledby="t-avance">
+    <div class="eyebrow">Avance</div>
+    <h2 id="t-avance">Historias de usuario por capa</h2>
+    <p class="sub">Cada barra representa las 33 historias del proyecto, a escala. Una historia cuenta como completa en la API cuando sus criterios de aceptación están implementados y probados en el backend; en vistas, cuando tiene pantalla conectada a la API.</p>
+    <div class="progress-card">
+      <div id="tracks"></div>
+      <div class="legend" aria-hidden="true">
+        <span><i style="background:var(--ok)"></i>Completa</span>
+        <span><i style="background:var(--part)"></i>Parcial</span>
+        <span><i style="background:var(--none-bg);border:1px solid var(--line)"></i>Pendiente</span>
+        <span><i style="background:var(--out-bg);border:1px solid var(--line)"></i>Fuera de alcance</span>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="t-modulos">
+    <div class="eyebrow">Módulos</div>
+    <h2 id="t-modulos">Qué hay y qué falta en cada módulo</h2>
+    <div class="modules" id="modules"></div>
+  </section>
+
+  <section aria-labelledby="t-flujo">
+    <div class="eyebrow">Flujo principal</div>
+    <h2 id="t-flujo">Del pedido al comprobante</h2>
+    <p class="sub">Cada paso valida el rol del usuario y el estado anterior. El flujo completo se puede demostrar hoy hasta la entrega con la interfaz, y hasta el comprobante con la API (colección de Postman).</p>
+    <div class="flow" id="flow"></div>
+  </section>
+
+  <section aria-labelledby="t-hu">
+    <div class="eyebrow">Detalle</div>
+    <h2 id="t-hu">Las 33 historias de usuario</h2>
+    <div class="toolbar" role="group" aria-label="Filtrar historias">
+      <button type="button" id="f-todas" data-filtro="todas" aria-pressed="true">Todas</button>
+      <button type="button" id="f-pend" data-filtro="pendientes" aria-pressed="false">Con algo pendiente</button>
+      <button type="button" id="f-vistas" data-filtro="sin-vista" aria-pressed="false">API lista, falta vista</button>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>HU</th><th>Historia</th><th>API</th><th>Vista</th><th>Observación</th></tr></thead>
+        <tbody id="hu-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section aria-labelledby="t-calidad">
+    <div class="eyebrow">Calidad</div>
+    <h2 id="t-calidad">Pruebas y bloqueos</h2>
+    <div class="split">
+      <div class="panel">
+        <h3>Matriz de pruebas: 55 casos</h3>
+        <div class="track" role="img" aria-label="45 pasan, 6 fallan, 4 no implementados">
+          <div class="seg ok" style="flex:45">45 pasan</div>
+          <div class="seg" style="flex:6;background:var(--bad);color:var(--surface)">6</div>
+          <div class="seg none" style="flex:4">4</div>
+        </div>
+        <div class="mini table-scroll">
+          <table>
+            <thead><tr><th>Módulo</th><th class="num">Pasa</th><th class="num">Falla</th><th class="num">No impl.</th></tr></thead>
+            <tbody>
+              <tr><td>Usuarios y seguridad</td><td class="num">13</td><td class="num">0</td><td class="num">2</td></tr>
+              <tr><td>Menú</td><td class="num">6</td><td class="num">0</td><td class="num">1</td></tr>
+              <tr><td>Mesas y reservas</td><td class="num">6</td><td class="num">6</td><td class="num">0</td></tr>
+              <tr><td>Pedidos</td><td class="num">10</td><td class="num">0</td><td class="num">0</td></tr>
+              <tr><td>Facturación</td><td class="num">10</td><td class="num">0</td><td class="num">0</td></tr>
+              <tr><td>Reportes</td><td class="num">0</td><td class="num">0</td><td class="num">1</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="sub" style="font-size:13.5px">Fuentes: 39 pruebas unitarias, colección Postman (93 peticiones), prueba del login en navegador (27 casos) y pruebas manuales de reservas. Detalle en el manual técnico, sección 13.3.</p>
+      </div>
+
+      <div class="panel">
+        <h3>Bloqueos actuales</h3>
+        <ol class="blockers">
+          <li><span class="n">1</span><p><strong>Reservas no se crean desde la vista.</strong> Llama a <code>POST /api/mesas/{id}/reservas</code>, que no existe (405).</p></li>
+          <li><span class="n">2</span><p><strong>La fecha de la reserva se pierde.</strong> Se guarda la fecha de creación en lugar de la pedida y no se puede editar.</p></li>
+          <li><span class="n">3</span><p><strong>Reservas sin validaciones.</strong> Permite la misma mesa y hora dos veces y la mesa no pasa a RESERVADA al confirmar.</p></li>
+          <li><span class="n">4</span><p><strong>Login pendiente de merge.</strong> Sin el PR #22 las vistas responden 401.</p></li>
+        </ol>
+      </div>
+
+      <div class="panel">
+        <h3>Siguientes pasos</h3>
+        <ol class="blockers next">
+          <li><span class="n">1</span><p><strong>Mergear el PR #22</strong> (login, sesión y menú por rol).</p></li>
+          <li><span class="n">2</span><p><strong>Corregir reservas</strong> en backend y vista.</p></li>
+          <li><span class="n">3</span><p><strong>Vista de facturación</strong> para caja: la API ya está lista.</p></li>
+          <li><span class="n">4</span><p><strong>Gestión de usuarios</strong> (HU01–HU04): API y vista.</p></li>
+          <li><span class="n">5</span><p><strong>Reportes</strong> (HU29, HU30, HU32, HU33) sobre los datos que ya se registran.</p></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap">
+  <span>Fuentes: código del repositorio, <code>MVP.md</code>, <code>docs/manuales/Manual Tecnico SIAR.md</code> y pruebas ejecutadas contra el backend y MySQL.</span>
+  <span>Repositorio: <a href="https://github.com/ejosephfernandez/Restaurante_Ing_software_-" target="_blank" rel="noopener">ejosephfernandez/Restaurante_Ing_software_-</a> · <a href="https://github.com/ejosephfernandez/Restaurante_Ing_software_-/pull/22" target="_blank" rel="noopener">PR #22</a></span>
+</footer>
+
+<script>
+// Estado por historia: ok = completa, part = parcial, none = pendiente, out = fuera de alcance
+const ETIQUETA = { ok: "Completa", part: "Parcial", none: "Pendiente", out: "Fuera de alcance", bad: "Con fallos" };
+
+const HISTORIAS = [
+  ["Gestión de usuarios", [
+    ["HU01", "Registrar usuario", "none", "none", "Sin endpoint. Solo existe el admin inicial y el script de usuarios de prueba."],
+    ["HU02", "Editar usuario", "none", "none", "Sin endpoint."],
+    ["HU03", "Eliminar / desactivar usuario", "none", "none", "Sin endpoint. Un usuario inactivo ya no puede iniciar sesión."],
+    ["HU04", "Asignar rol a usuario", "part", "none", "Los permisos por rol se aplican en toda la API, pero el rol se asigna por base de datos."],
+    ["HU05", "Administrar catálogo de roles", "part", "none", "Roles por script; tablas de permisos listas, sin CRUD."],
+    ["HU06", "Iniciar sesión", "ok", "ok", "JWT, BCrypt, usuario o correo, sesión que vence, menú por rol. Vista en el PR #22."],
+    ["HU07", "Recuperar contraseña", "none", "none", "Requiere envío de correo."]
+  ]],
+  ["Gestión de menú", [
+    ["HU08", "Crear productos", "ok", "ok", "Valida precio positivo y categoría activa."],
+    ["HU09", "Modificar productos", "ok", "ok", "Los pedidos conservan el precio del momento."],
+    ["HU10", "Eliminar productos", "part", "ok", "Borrado lógico; falta bloquear la baja si está en un pedido activo."],
+    ["HU11", "Categorizar productos", "ok", "ok", "CRUD de categorías con desactivación lógica."],
+    ["HU12", "Disponibilidad en tiempo real", "ok", "ok", "Administrador o cocinero; un producto agotado no entra a un pedido."]
+  ]],
+  ["Mesas y reservas", [
+    ["HU13", "Crear mesa", "ok", "ok", "Número único, inicia DISPONIBLE."],
+    ["HU14", "Modificar mesa", "ok", "ok", "Valida que el nuevo número no esté en uso."],
+    ["HU15", "Consultar estado de mesas", "ok", "ok", "Listado con estado y disponibilidad."],
+    ["HU16", "Reservar mesa", "part", "part", "Fallos: la fecha se pierde, permite choques de horario, la mesa no pasa a RESERVADA y la vista no puede crear reservas."],
+    ["HU17", "Liberar mesa", "part", "ok", "Funciona, pero el estado acepta cualquier texto."]
+  ]],
+  ["Pedidos", [
+    ["HU18", "Crear pedido", "ok", "ok", "Solo en mesa ocupada o reservada; registra mesero y fecha."],
+    ["HU19", "Agregar productos", "ok", "ok", "Cantidad, observación y total automático."],
+    ["HU20", "Modificar pedido", "ok", "ok", "Solo en PENDIENTE; recalcula el total."],
+    ["HU21", "Cancelar pedido", "ok", "ok", "Mientras no esté facturado."],
+    ["HU22", "Enviar a cocina", "ok", "ok", "Registra la hora de envío; desde ahí no se modifica."],
+    ["HU23", "Consultar estado", "ok", "ok", "LISTO (cocina), ENTREGADO (mesero); filtros por mesa, mesero y estado."]
+  ]],
+  ["Inventario", [
+    ["HU31", "Reporte de consumo de inventario", "out", "out", "El inventario quedó fuera del alcance de esta fase."]
+  ]],
+  ["Facturación", [
+    ["HU24", "Generar factura", "ok", "none", "Solo pedidos entregados, número consecutivo y cajero registrado."],
+    ["HU25", "Calcular impuestos", "part", "none", "Tasa configurable (8 %); falta tasa por producto."],
+    ["HU26", "Aplicar descuentos", "part", "none", "Porcentaje o monto, con autorización sobre el 20 %; falta descuento por producto."],
+    ["HU27", "Registrar pago", "ok", "none", "Efectivo, tarjeta, transferencia o mixto, con cálculo del cambio."],
+    ["HU28", "Emitir comprobante", "part", "none", "Se entrega en JSON con histórico; falta el PDF."]
+  ]],
+  ["Reportes", [
+    ["HU29", "Ventas por periodo", "none", "none", "Los datos ya se registran."],
+    ["HU30", "Productos más vendidos", "none", "none", "Los datos ya se registran."],
+    ["HU32", "Ocupación de mesas", "none", "none", "Los datos ya se registran."],
+    ["HU33", "Indicadores financieros", "none", "none", "Los datos ya se registran."]
+  ]]
+];
+
+const MODULOS = [
+  ["Gestión de usuarios", "part", "Login con JWT, roles y permisos en toda la API.", "none", "Solo la pantalla de login (PR #22). Falta el CRUD de usuarios en API y vista."],
+  ["Gestión de menú", "ok", "Categorías, productos y disponibilidad completos.", "ok", "Pantallas de productos y categorías conectadas."],
+  ["Mesas y reservas", "part", "Mesas completo; reservas con fallos de fecha y validaciones.", "part", "Pantalla de mesas completa; reservas solo lista, no crea."],
+  ["Pedidos", "ok", "Flujo completo de estados con reglas por rol.", "ok", "Crear, agregar productos, enviar a cocina, listo, entregado y cancelar."],
+  ["Facturación", "ok", "Factura, impuesto, descuento con autorización, pago mixto y comprobante.", "none", "Sin pantalla. Es el siguiente paso con más impacto."],
+  ["Reportes", "none", "Pendiente.", "none", "Pendiente."]
+];
+
+const FLUJO = [
+  ["Login", "POST /api/auth/login", "ok", "ok"],
+  ["Ocupar mesa", "PUT /api/mesas/{id}/estado", "ok", "ok"],
+  ["Crear pedido", "POST /api/pedidos", "ok", "ok"],
+  ["Enviar a cocina", "PATCH …/enviar-cocina", "ok", "ok"],
+  ["Listo y entregado", "PATCH …/listo · …/entregado", "ok", "ok"],
+  ["Facturar", "POST /api/facturas", "ok", "none"],
+  ["Cobrar", "POST /api/facturas/{id}/pagos", "ok", "none"],
+  ["Comprobante", "POST …/comprobantes", "ok", "none"]
+];
+
+const pill = (estado, texto) => `<span class="pill ${estado}">${texto ?? ETIQUETA[estado]}</span>`;
+
+// Barras de avance a escala sobre las 33 historias
+function conteo(indice) {
+  const c = { ok: 0, part: 0, none: 0, out: 0 };
+  HISTORIAS.forEach(([, hus]) => hus.forEach((h) => c[h[indice]]++));
+  return c;
+}
+function barra(nombre, detalle, c) {
+  const total = c.ok + c.part + c.none + c.out;
+  const seg = (k, txt) => c[k] ? `<div class="seg ${k}" style="flex:${c[k]}" title="${ETIQUETA[k]}: ${c[k]}">${txt}</div>` : "";
+  return `<div class="track-row">
+    <div class="track-label"><strong>${nombre}</strong><span>${detalle}</span></div>
+    <div class="track" role="img" aria-label="${nombre}: ${c.ok} completas, ${c.part} parciales, ${c.none} pendientes, ${c.out} fuera de alcance de ${total}">
+      ${seg("ok", c.ok + " completas")}${seg("part", c.part)}${seg("none", c.none)}${seg("out", c.out)}
+    </div></div>`;
+}
+const api = conteo(2), vista = conteo(3);
+document.getElementById("tracks").innerHTML =
+  barra("API", `${api.ok} de 33 completas`, api) + `<div style="height:14px"></div>` +
+  barra("Vistas", `${vista.ok} de 33 con pantalla`, vista);
+
+document.getElementById("modules").innerHTML = MODULOS.map(([nombre, ea, ta, ev, tv]) => `
+  <article class="module">
+    <h3>${nombre}</h3>
+    <div class="module-rows">
+      <div class="module-row"><b>API</b><p>${pill(ea)} ${ta}</p></div>
+      <div class="module-row"><b>Vista</b><p>${pill(ev)} ${tv}</p></div>
+    </div>
+  </article>`).join("");
+
+document.getElementById("flow").innerHTML = FLUJO.map(([paso, ruta, ea, ev]) => `
+  <div class="step"><strong>${paso}</strong><code>${ruta}</code>
+    <div class="chips">${pill(ea, "API")} ${pill(ev, ev === "ok" ? "Vista" : "Sin vista")}</div></div>`).join("");
+
+// Tabla de historias con filtros
+const cuerpo = document.getElementById("hu-body");
+function pintar(filtro) {
+  const filas = [];
+  HISTORIAS.forEach(([modulo, hus]) => {
+    const visibles = hus.filter(([, , a, v]) =>
+      filtro === "todas" ||
+      (filtro === "pendientes" && (a !== "ok" || v !== "ok") && a !== "out") ||
+      (filtro === "sin-vista" && a === "ok" && v !== "ok"));
+    if (!visibles.length) return;
+    filas.push(`<tr class="group"><td colspan="5">${modulo}</td></tr>`);
+    visibles.forEach(([hu, nombre, a, v, nota]) => filas.push(
+      `<tr><td class="hu">${hu}</td><td>${nombre}</td><td>${pill(a)}</td><td>${pill(v)}</td><td class="note">${nota}</td></tr>`));
+  });
+  cuerpo.innerHTML = filas.length ? filas.join("") : `<tr><td colspan="5" class="empty">No hay historias con este filtro.</td></tr>`;
+}
+const botones = document.querySelectorAll(".toolbar button");
+botones.forEach((b) => b.addEventListener("click", () => {
+  botones.forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+  pintar(b.dataset.filtro);
+}));
+pintar("todas");
+</script>
+
+</body>
+</html>

@@ -4,6 +4,7 @@ import { reservasService } from "../services/reservasService.js";
 import "../../../styles/reservas.css";
 import SiarIcon from "../../../components/ui/SiarIcon.jsx";
 
+import UsuarioActual from "../../../components/ui/UsuarioActual.jsx";
 const FILTROS = [
   ["TODAS", "Todas"],
   ["HOY", "Hoy"],
@@ -394,10 +395,7 @@ export default function ReservasPage() {
         </div>
         <div className="topbar-right">
           <span className="environment-pill"><span /> Entorno local</span>
-          <div className="profile-block">
-            <div className="avatar">AD</div>
-            <div className="profile-details"><strong>Administrador</strong><small>Administrador</small></div>
-          </div>
+          <UsuarioActual />
         </div>
       </header>
 

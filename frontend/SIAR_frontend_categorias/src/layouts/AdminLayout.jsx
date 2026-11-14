@@ -1,16 +1,42 @@
 import { useEffect, useState } from "react";
-import { NavLink, Outlet, useLocation } from "react-router-dom";
+import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
+
+import SiarIcon from "../components/ui/SiarIcon.jsx";
+import { useAuth } from "../features/auth/context/AuthContext.jsx";
+import { iniciales, nombreRol, puedeAcceder } from "../config/roles.js";
 import "../styles/admin-layout.css";
 
+// Layout único del panel. El menú se filtra según el rol del usuario
+// (ver config/roles.js), así cada rol solo ve las secciones que puede operar.
 export default function AdminLayout() {
+    const { sesion, logout } = useAuth();
+    const location = useLocation();
+    const navigate = useNavigate();
+    const rol = sesion?.rol;
+
     const [menuAbierto, setMenuAbierto] = useState(true);
     const [mesasAbierto, setMesasAbierto] = useState(
         location.pathname.startsWith("/mesas")
     );
 
     useEffect(() => {
-        setMesasAbierto(location.pathname.startsWith("/mesas"));
+        if (location.pathname.startsWith("/mesas")) {
+            setMesasAbierto(true);
+        }
     }, [location.pathname]);
+
+    const verProductos = puedeAcceder(rol, "productos");
+    const verCategorias = puedeAcceder(rol, "categorias");
+    const verMesas = puedeAcceder(rol, "mesas");
+    const verReservas = puedeAcceder(rol, "reservas");
+
+    function cerrarSesion() {
+        logout();
+        navigate("/login", { replace: true });
+    }
+
+    const claseSubmenu = ({ isActive }) =>
+        `admin-submenu-link ${isActive ? "active" : ""}`;
 
     return (
         <div className="admin-layout">
@@ -37,119 +63,120 @@ export default function AdminLayout() {
                         <span>Inicio</span>
                     </div>
 
-                    <NavLink
-                        to="/pedidos"
-                        className={({ isActive }) =>
-                            `admin-nav-link ${isActive ? "active" : ""}`
-                        }
-                    >
-                        <span className="admin-nav-icon">▤</span>
-                        <span>Pedidos</span>
-                    </NavLink>
-
-                    {/* Menú es la sección habilitada */}
-                    <div className="admin-nav-group">
-                        <button
-                            type="button"
-                            className="admin-nav-menu"
-                            onClick={() =>
-                                setMenuAbierto(!menuAbierto)
+                    {puedeAcceder(rol, "pedidos") && (
+                        <NavLink
+                            to="/pedidos"
+                            className={({ isActive }) =>
+                                `admin-nav-link ${isActive ? "active" : ""}`
                             }
-                            aria-expanded={menuAbierto}
                         >
-                            <span className="admin-nav-icon">▦</span>
-                            <span>Menú</span>
+                            <span className="admin-nav-icon">▤</span>
+                            <span>Pedidos</span>
+                        </NavLink>
+                    )}
 
-                            <span className="admin-chevron">
-                                {menuAbierto ? "⌃" : "⌄"}
-                            </span>
-                        </button>
+                    {(verProductos || verCategorias) && (
+                        <div className="admin-nav-group">
+                            <button
+                                type="button"
+                                className="admin-nav-menu"
+                                onClick={() => setMenuAbierto(!menuAbierto)}
+                                aria-expanded={menuAbierto}
+                            >
+                                <span className="admin-nav-icon">▦</span>
+                                <span>Menú</span>
 
-                        {menuAbierto && (
-                            <div className="admin-submenu">
-                                <NavLink
-                                    to="/productos"
-                                    className={({ isActive }) =>
-                                        `admin-submenu-link ${
-                                            isActive ? "active" : ""
-                                        }`
-                                    }
-                                >
-                                    Productos
-                                </NavLink>
+                                <span className="admin-chevron">
+                                    {menuAbierto ? "⌃" : "⌄"}
+                                </span>
+                            </button>
 
-                                <NavLink
-                                    to="/categorias"
-                                    className={({ isActive }) =>
-                                        `admin-submenu-link ${
-                                            isActive ? "active" : ""
-                                        }`
-                                    }
-                                >
-                                    Categorías
-                                </NavLink>
-                            </div>
-                        )}
-                    </div>
+                            {menuAbierto && (
+                                <div className="admin-submenu">
+                                    {verProductos && (
+                                        <NavLink to="/productos" className={claseSubmenu}>
+                                            Productos
+                                        </NavLink>
+                                    )}
 
-                    <div className="admin-nav-disabled" aria-disabled="true">
-                        <span className="admin-nav-icon">♙</span>
-                        <span>Usuarios</span>
-                    </div>
+                                    {verCategorias && (
+                                        <NavLink to="/categorias" className={claseSubmenu}>
+                                            Categorías
+                                        </NavLink>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                    )}
 
-                    {/* Se habilita seccion de mesas */}
-                    <div className="admin-nav-group">
-                        <button
-                            type="button"
-                            className="admin-nav-menu"
-                            onClick={() => setMesasAbierto((abierto) => !abierto)}
-                        >
-                            <span className="admin-nav-icon">♧</span>
-                            <span>Mesas</span>
-                            <span className="admin-chevron">
-                                {mesasAbierto ? "⌃" : "⌄"}
-                            </span>
-                        </button>
-                        {mesasAbierto && (
-                            <div className="admin-submenu">
-                                <NavLink
-                                    to="/mesas"
-                                    end
-                                    className={({ isActive }) =>
-                                        `admin-submenu-link ${isActive ? "active" : ""}`
-                                    }
-                                >
-                                    Mesas
-                                </NavLink>
+                    {rol === "ADMINISTRADOR" && (
+                        <div className="admin-nav-disabled" aria-disabled="true">
+                            <span className="admin-nav-icon">♙</span>
+                            <span>Usuarios</span>
+                        </div>
+                    )}
 
-                                <NavLink
-                                    to="/mesas/reservas"
-                                    className={({ isActive }) =>
-                                        `admin-submenu-link ${isActive ? "active" : ""}`
-                                    }
-                                >
-                                    Reservas
-                                </NavLink>
-                            </div>
-                        )}
-                    </div>
+                    {(verMesas || verReservas) && (
+                        <div className="admin-nav-group">
+                            <button
+                                type="button"
+                                className="admin-nav-menu"
+                                onClick={() => setMesasAbierto((abierto) => !abierto)}
+                                aria-expanded={mesasAbierto}
+                            >
+                                <span className="admin-nav-icon">♧</span>
+                                <span>Mesas</span>
+                                <span className="admin-chevron">
+                                    {mesasAbierto ? "⌃" : "⌄"}
+                                </span>
+                            </button>
 
-                    <div className="admin-nav-disabled" aria-disabled="true">
-                        <span className="admin-nav-icon">▥</span>
-                        <span>Reportes</span>
-                    </div>
+                            {mesasAbierto && (
+                                <div className="admin-submenu">
+                                    {verMesas && (
+                                        <NavLink to="/mesas" end className={claseSubmenu}>
+                                            Mesas
+                                        </NavLink>
+                                    )}
+
+                                    {verReservas && (
+                                        <NavLink to="/mesas/reservas" className={claseSubmenu}>
+                                            Reservas
+                                        </NavLink>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {rol === "ADMINISTRADOR" && (
+                        <div className="admin-nav-disabled" aria-disabled="true">
+                            <span className="admin-nav-icon">▥</span>
+                            <span>Reportes</span>
+                        </div>
+                    )}
 
                     {/* Configuración se omite porque no pertenece
                         a los módulos definidos actualmente en SIAR. */}
                 </nav>
 
                 <div className="admin-sidebar-footer">
-                    <div className="admin-avatar">AD</div>
+                    <div className="admin-avatar">{iniciales(sesion?.nombre)}</div>
 
-                    <div>
-                        <strong>Administrador</strong>
-                        <span>Acceso al sistema</span>
+                    <div className="admin-user">
+                        <strong>{sesion?.nombre}</strong>
+                        <span>{nombreRol(rol)}</span>
                     </div>
+
+                    <button
+                        type="button"
+                        className="admin-logout"
+                        onClick={cerrarSesion}
+                        title="Cerrar sesión"
+                        aria-label="Cerrar sesión"
+                    >
+                        <SiarIcon name="logout" size="sm" />
+                    </button>
                 </div>
             </aside>
 

@@ -55,8 +55,15 @@
 
 .admin-navigation {
     display: flex;
+    flex: 1;
+    min-height: 0;
     flex-direction: column;
     gap: 8px;
+    /* En pantallas bajas el menú hace scroll y el pie (usuario y
+       cerrar sesión) queda siempre visible al fondo de la barra */
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgb(255 255 255 / 25%) transparent;
 }
 
 .admin-nav-disabled,
@@ -177,10 +184,37 @@
     font-weight: 800;
 }
 
-.admin-sidebar-footer div:last-child {
+.admin-user {
     display: flex;
+    min-width: 0;
+    flex: 1;
     flex-direction: column;
     gap: 4px;
+}
+
+.admin-user strong {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Botón de cerrar sesión */
+.admin-logout {
+    display: grid;
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
+    place-items: center;
+    border: 0;
+    border-radius: 9px;
+    background: rgb(255 255 255 / 8%);
+    color: #d2e7dc;
+    transition: background 0.15s, color 0.15s;
+}
+
+.admin-logout:hover {
+    background: #a8dfc2;
+    color: #064c38;
 }
 
 .admin-sidebar-footer strong {
@@ -214,6 +248,7 @@
     }
 
     .admin-navigation {
+        overflow: visible;
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 5px;
@@ -223,8 +258,10 @@
         grid-row: span 2;
     }
 
+    /* En móvil se conserva el pie para poder cerrar sesión */
     .admin-sidebar-footer {
-        display: none;
+        margin-top: 12px;
+        padding-top: 12px;
     }
 
     .admin-content {
