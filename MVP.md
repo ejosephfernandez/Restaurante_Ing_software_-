@@ -75,11 +75,19 @@ La columna "Observaciones" se refiere a la API.
 
 | HU | Historia | API | Vista | Observaciones |
 |---|---|---|---|---|
+<<<<<<< Updated upstream
 | HU13 | Crear mesa | ✅ | ❌ | Número no duplicado, campos obligatorios, estado inicial DISPONIBLE. |
 | HU14 | Modificar mesa | ✅ | ❌ | Valida que el nuevo número no esté en uso. |
 | HU15 | Consultar estado de mesas | ✅ | ❌ | Listado con estado y consulta de disponibilidad por mesa. |
 | HU16 | Reservar mesa | 🟡 | ❌ | CRUD de reservas con confirmar y cancelar, con permisos por rol. **Falta** validar choques de horario y pasar la mesa a RESERVADA al confirmar. |
 | HU17 | Liberar mesa | 🟡 | ❌ | Se libera cambiando el estado a DISPONIBLE. **Falta** validar que el estado enviado sea uno de los permitidos (hoy acepta cualquier texto). |
+=======
+| HU13 | Crear mesa | ✅ | ✅ | Número no duplicado, campos obligatorios, estado inicial DISPONIBLE. La interfaz permite gestionar las mesas. |
+| HU14 | Modificar mesa | ✅ | ✅ | Valida que el nuevo número no esté en uso. La interfaz incluye la gestión de los datos de las mesas. |
+| HU15 | Consultar estado de mesas | ✅ | ✅ | Listado visual de mesas y consulta de su estado. |
+| HU16 | Reservar mesa | ✅ | ✅ | La interfaz permite gestionar reservas. La API valida choques de horario (margen de 60 min) y cambia automáticamente el estado de la mesa a RESERVADA al confirmar. |
+| HU17 | Liberar mesa | ✅ | ✅ | La interfaz permite gestionar el estado de las mesas. La API valida estrictamente que el estado enviado sea uno de los permitidos (DISPONIBLE, OCUPADA, RESERVADA, INACTIVA). |
+>>>>>>> Stashed changes
 
 ### Módulo 4. Gestión de pedidos
 

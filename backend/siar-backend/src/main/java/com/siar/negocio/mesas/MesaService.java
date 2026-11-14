@@ -2,8 +2,11 @@ package com.siar.negocio.mesas;
 
 import com.siar.persistencia.mesas.ReservaRepository;
 import java.util.List;
+import java.util.Set;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.siar.persistencia.mesas.Mesa;
 import com.siar.persistencia.mesas.MesaRepository;
@@ -14,6 +17,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 // @Transactional(readOnly = true)
 public class MesaService {
+
+    // HU17: estados permitidos por el CHECK chk_mesa_estado del DDL.
+    private static final Set<String> ESTADOS_MESA_VALIDOS =
+            Set.of("DISPONIBLE", "OCUPADA", "RESERVADA", "INACTIVA");
+
+    private static final String ESTADOS_MESA_MENSAJE =
+            "DISPONIBLE, OCUPADA, RESERVADA, INACTIVA";
 
     private final ReservaRepository reservaRepository;
     private final MesaRepository mesaRepository;
@@ -89,12 +99,29 @@ public class MesaService {
         return mesaRepository.save(mesaExistente);
     }
 
+    // HU17: solo se aceptan los estados definidos para la mesa.
     @Transactional
     public void cambiarEstado(Long idMesa, String nuevoEstado) {
         Mesa mesa = mesaRepository.findById(idMesa)
-                .orElseThrow(() -> new RuntimeException("Mesa no encontrada"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "No existe la mesa con ID: " + idMesa));
 
-        mesa.setEstado(nuevoEstado);
+        if (nuevoEstado == null || nuevoEstado.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "El estado de la mesa es obligatorio. Estados permitidos: "
+                            + ESTADOS_MESA_MENSAJE);
+        }
+
+        // Se normaliza para aceptar "disponible" o " disponible ".
+        String estadoNormalizado = nuevoEstado.trim().toUpperCase();
+
+        if (!ESTADOS_MESA_VALIDOS.contains(estadoNormalizado)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Estado de mesa inválido: '" + nuevoEstado
+                            + "'. Estados permitidos: " + ESTADOS_MESA_MENSAJE);
+        }
+
+        mesa.setEstado(estadoNormalizado);
 
         mesaRepository.save(mesa);
     }
