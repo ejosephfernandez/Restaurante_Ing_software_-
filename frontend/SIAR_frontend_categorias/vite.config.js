@@ -14,6 +14,13 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
       },
+      // Túnel WebSocket para STOMP durante el desarrollo.
+      '/ws': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+        secure: false,
+        ws: true,
+      },
     },
   },
 });

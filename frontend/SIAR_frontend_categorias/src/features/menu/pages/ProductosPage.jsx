@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { productoService } from "../services/ProductoService.js";
+import { useAuth } from "../../auth/context/AuthContext.jsx";
+import { suscribirDisponibilidadProductos } from "../../../services/productosDisponibilidadSocket.js";
 import "../../../styles/productos.css";
 import SiarIcon from "../../../components/ui/SiarIcon.jsx";
-
 import UsuarioActual from "../../../components/ui/UsuarioActual.jsx";
 const FORM_VACIO = {
   nombre: "",
@@ -49,6 +50,8 @@ function StatCard({ icon, label, value, note, iconClass = "icon-green" }) {
 }
 
 export default function ProductosPage() {
+  const { sesion } = useAuth();
+
   const [productos, setProductos] = useState([]);
   const [categorias, setCategorias] = useState([]);
   const [cargando, setCargando] = useState(true);
@@ -64,8 +67,11 @@ export default function ProductosPage() {
   const [form, setForm] = useState(FORM_VACIO);
   const [accionId, setAccionId] = useState(null);
   const porPagina = 5;
+  const cargaActualRef = useRef(0);
 
-  async function cargar({ silencioso = false } = {}) {
+  const cargar = useCallback(async ({ silencioso = false } = {}) => {
+    const idCarga = ++cargaActualRef.current;
+
     if (!silencioso) setCargando(true);
     setError("");
 
@@ -74,6 +80,9 @@ export default function ProductosPage() {
         productoService.listar(),
         productoService.listarCategoriasActivas(),
       ]);
+
+      // Una respuesta antigua no debe sobrescribir una consulta más reciente.
+      if (idCarga !== cargaActualRef.current) return;
 
       setProductos(
         Array.isArray(productosApi)
@@ -86,17 +95,31 @@ export default function ProductosPage() {
       );
       setCategorias(Array.isArray(categoriasApi) ? categoriasApi : []);
     } catch (e) {
-      setError(e.message || "No fue posible cargar los productos.");
+      if (idCarga === cargaActualRef.current) {
+        setError(e.message || "No fue posible cargar los productos.");
+      }
     } finally {
-      if (!silencioso) setCargando(false);
+      if (idCarga === cargaActualRef.current) {
+        setCargando(false);
+      }
     }
-  }
-
-  useEffect(() => {
-    cargar();
-    // La carga inicial se ejecuta una vez al montar la pantalla.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Carga inicial del catálogo.
+  useEffect(() => {
+    void cargar();
+  }, [cargar]);
+
+  // Cada evento confirmado provoca una nueva consulta REST.
+  // La API sigue siendo la fuente de verdad del estado del producto.
+  useEffect(() => {
+    if (!sesion?.token) return undefined;
+
+    return suscribirDisponibilidadProductos(
+      sesion.token,
+      () => cargar({ silencioso: true })
+    );
+  }, [sesion?.token, cargar]);
 
   const resumen = useMemo(
     () => ({
