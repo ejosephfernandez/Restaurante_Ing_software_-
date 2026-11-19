@@ -5,7 +5,7 @@ Este documento resume qué parte de los requisitos del proyecto ya está constru
 - **API (backend):** endpoints, reglas de negocio, seguridad y base de datos.
 - **Vista (frontend):** pantallas en React que usa el personal del restaurante.
 
-> **Corte:** 29 de octubre de 2026.
+> **Corte:** 05/Noviembre/2026.
 > Incluye los módulos de pedidos y facturación del PR #16 (`feature/facturacion`), pendiente de merge a `develop`.
 
 Leyenda: ✅ completo · 🟡 parcial · ❌ pendiente · ⛔ fuera del alcance actual
@@ -14,14 +14,15 @@ Leyenda: ✅ completo · 🟡 parcial · ❌ pendiente · ⛔ fuera del alcance 
 
 **La API del MVP está construida.** Cubre de punta a punta el ciclo operativo del restaurante: el mesero toma el pedido en una mesa, cocina lo prepara, el mesero lo entrega y caja lo factura, cobra (incluso con pago mixto) y emite el comprobante. Todo está protegido con inicio de sesión y permisos por rol, y se puede probar completo con la colección de Postman.
 
-**Lo que falta es principalmente la interfaz.** Solo existen las vistas de categorías y productos, y todavía no hay pantalla de login. Del lado de la API, lo pendiente se concentra en gestión de usuarios y reportes.
+**La interfaz principal está integrada.** El frontend ya cuenta con la vista de Login (manejo de token JWT) y las pantallas para gestionar Categorías, Productos, Mesas, Reservas y Pedidos.
+
 
 | Módulo | API | Vistas |
 |---|---|---|
 | 1. Gestión de usuarios | 🟡 Login y roles; falta CRUD de usuarios | ❌ Ninguna (ni login) |
 | 2. Gestión de menú | ✅ Completa (1 detalle pendiente) | 🟡 Categorías y productos, sin login |
-| 3. Gestión de mesas y reservas | CRUD listo, validaciones de reservas OK | ❌ Ninguna |
-| 4. Gestión de pedidos | ✅ Completa | ❌ Ninguna |
+| 3. Gestión de mesas y reservas | ✅ CRUD listo, validaciones de mesas y reservas OK | ✅ |
+| 4. Gestión de pedidos | ✅ Completa | ✅  |
 | 5. Gestión de inventario | ⛔ Fuera del alcance actual | ⛔ |
 | 6. Facturación | ✅ Completa en lo esencial | ❌ Ninguna |
 | 7. Reportes | ❌ Pendiente | ❌ Pendiente |
@@ -31,7 +32,7 @@ Leyenda: ✅ completo · 🟡 parcial · ❌ pendiente · ⛔ fuera del alcance 
 
 ### ⚠️ Bloqueo actual entre API y vistas
 
-La API exige token JWT desde que se integró la seguridad, pero el frontend todavía no hace login ni envía `Authorization: Bearer <token>`. Por eso **las pantallas de categorías y productos hoy reciben 401**. Lo primero para demostrar el MVP con interfaz es una vista de login y enviar el token en las peticiones. El PR #15 (reorganización del frontend) sigue abierto.
+ El PR #15 (reorganización del frontend) sigue abierto.
 
 ## 2. Flujo que la API ya resuelve
 
@@ -85,12 +86,12 @@ La columna "Observaciones" se refiere a la API.
 
 | HU | Historia | API | Vista | Observaciones |
 |---|---|---|---|---|
-| HU18 | Crear pedido | ✅ | ❌ | Solo en mesas OCUPADA o RESERVADA; inicia PENDIENTE y registra fecha/hora y mesero. |
-| HU19 | Agregar productos | ✅ | ❌ | Cantidad y observación por producto; total automático; solo en PENDIENTE o EN_PREPARACION. |
-| HU20 | Modificar pedido | ✅ | ❌ | Editar cantidad u observación y quitar productos, solo en PENDIENTE; recalcula el total. |
-| HU21 | Cancelar pedido | ✅ | ❌ | Estado CANCELADO, salvo si ya está FACTURADO. Motivo de cancelación (opcional) no está. |
-| HU22 | Enviar a cocina | ✅ | ❌ | PENDIENTE → EN_PREPARACION, registra la hora de envío y desde ahí ya no se modifica. |
-| HU23 | Consultar estado | ✅ | ❌ | Flujo LISTO (cocina) → ENTREGADO (mesero) → FACTURADO (caja); filtros por mesa, mesero y estado. Historial de cambios (opcional) no está. |
+| HU18 | Crear pedido | ✅ | ✅ | Solo en mesas OCUPADA o RESERVADA; inicia PENDIENTE y registra fecha/hora y mesero. |
+| HU19 | Agregar productos | ✅ | ✅ | Cantidad y observación por producto; total automático; solo en PENDIENTE o EN_PREPARACION. |
+| HU20 | Modificar pedido | ✅ | ✅ | Editar cantidad u observación y quitar productos, solo en PENDIENTE; recalcula el total. |
+| HU21 | Cancelar pedido | ✅ | ✅ | Estado CANCELADO, salvo si ya está FACTURADO. Motivo de cancelación (opcional) no está. |
+| HU22 | Enviar a cocina | ✅ | ✅ | PENDIENTE → EN_PREPARACION, registra la hora de envío y desde ahí ya no se modifica. |
+| HU23 | Consultar estado | ✅ |  🟡 | Flujo LISTO (cocina) → ENTREGADO (mesero) → FACTURADO (caja); filtros por mesa, mesero y estado. Historial de cambios (opcional) no está. |
 
 ### Módulo 5. Gestión de inventario
 
@@ -170,16 +171,14 @@ Salvo usuarios y reportes, **todas las vistas pendientes ya tienen su API lista*
 ## 7. Pendientes sugeridos (por prioridad)
 
 **Vistas (frontend):**
-1. ~~**Login** y envío del token en todas las peticiones, para desbloquear las vistas de menú.~~ ✅ *Completado.*
-2.  ~~**Mesas y pedidos (mesero)**~~ ✅ *Completado.* **Falta:** Pantalla exclusiva para **cocina** y **caja**, para demostrar el flujo completo con interfaz (la API ya existe).
-3. Comprobante imprimible o en PDF a partir del JSON que entrega la API (HU28).
+1. Pantalla exclusiva para **cocina** y **caja**, para demostrar el flujo completo con interfaz (la API ya existe).
+2. Comprobante imprimible o en PDF a partir del JSON que entrega la API (HU28).
 
 **API (backend):**
 1. **Gestión de usuarios** (HU01–HU03) con asignación de rol (HU04).
-2. **Completar reservas** (HU16): validar choques de horario y pasar la mesa a RESERVADA; validar los estados de mesa (HU17).
-3. **Reportes** (HU29, HU30, HU32, HU33) sobre los datos que ya se registran.
-4. Bloquear la baja de productos que estén en pedidos activos (HU10).
-5. Recuperación de contraseña (HU07) y auditoría (RNF06).
+2. **Reportes** (HU29, HU30, HU32, HU33) sobre los datos que ya se registran.
+3. Bloquear la baja de productos que estén en pedidos activos (HU10).
+4. Recuperación de contraseña (HU07) y auditoría (RNF06).
 
 ## 8. Cómo probar el MVP (API)
 
