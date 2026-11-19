@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.context.ApplicationEventPublisher;
+import com.siar.negocio.menu.eventos.ProductoDisponibilidadCambiadaEvent;
 
 import com.siar.persistencia.menu.Categoria;
 import com.siar.persistencia.menu.CategoriaRepository;
@@ -16,17 +18,20 @@ import com.siar.persistencia.menu.ProductoRepository;
 import com.siar.persistencia.pedidos.DetallePedidoRepository;
 import com.siar.persistencia.pedidos.EstadoPedido;
 
-@Service 
+@Service
 @Transactional(readOnly = true)
 public class ProductoService {
     private final ProductoRepository productoRepository;
     private final CategoriaRepository categoriaRepository;
     private final DetallePedidoRepository detallePedidoRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
-    public ProductoService (ProductoRepository productoRepository, CategoriaRepository categoriaRepository, DetallePedidoRepository detallePedidoRepository){
+    public ProductoService(ProductoRepository productoRepository, CategoriaRepository categoriaRepository,
+            DetallePedidoRepository detallePedidoRepository, ApplicationEventPublisher eventPublisher) {
         this.productoRepository = productoRepository;
         this.categoriaRepository = categoriaRepository;
         this.detallePedidoRepository = detallePedidoRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     // Consultar todos los productos.
@@ -50,8 +55,7 @@ public class ProductoService {
         return productoRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
-                        "No existe el producto con ID: " + id
-                ));
+                        "No existe el producto con ID: " + id));
     }
 
     // Consultar productos de una categoría.
@@ -59,8 +63,7 @@ public class ProductoService {
         if (!categoriaRepository.existsById(idCategoria)) {
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND,
-                    "No existe la categoría con ID: " + idCategoria
-            );
+                    "No existe la categoría con ID: " + idCategoria);
         }
 
         return productoRepository
@@ -72,8 +75,7 @@ public class ProductoService {
     public Producto crear(Producto datos) {
         validarDatos(datos);
 
-        Categoria categoria =
-                obtenerCategoriaActiva(datos.getCategoria());
+        Categoria categoria = obtenerCategoriaActiva(datos.getCategoria());
 
         Producto producto = new Producto();
         producto.setNombre(datos.getNombre().trim());
@@ -83,26 +85,25 @@ public class ProductoService {
         producto.setCategoria(categoria);
 
         producto.setActivo(
-                datos.getActivo() == null || datos.getActivo()
-        );
+                datos.getActivo() == null || datos.getActivo());
 
         producto.setDisponible(
                 producto.getActivo()
                         && (datos.getDisponible() == null
-                        || datos.getDisponible())
-        );
+                                || datos.getDisponible()));
 
         return productoRepository.save(producto);
     }
 
-     // Actualizar producto.
+    // Actualizar producto.
     @Transactional
     public Producto actualizar(Long id, Producto datos) {
         validarDatos(datos);
 
         Producto existente = obtenerPorId(id);
-        Categoria categoria =
-                obtenerCategoriaActiva(datos.getCategoria());
+
+        boolean disponibilidadAnterior = Boolean.TRUE.equals(existente.getDisponible());
+        Categoria categoria = obtenerCategoriaActiva(datos.getCategoria());
 
         existente.setNombre(datos.getNombre().trim());
         existente.setDescripcion(datos.getDescripcion());
@@ -129,10 +130,18 @@ public class ProductoService {
             existente.setDisponible(false);
         }
 
-        return productoRepository.save(existente);
+        Producto actualizado = productoRepository.save(existente);
+
+        publicarCambioDisponibilidad(
+                id,
+                disponibilidadAnterior,
+                Boolean.TRUE.equals(actualizado.getDisponible()));
+
+        return actualizado;
     }
 
     // Cambiar disponibilidad de un producto.
+    
     @Transactional
     public Producto cambiarDisponibilidad(
             Long id, boolean disponible) {
@@ -143,59 +152,66 @@ public class ProductoService {
                 && !Boolean.TRUE.equals(producto.getActivo())) {
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT,
-                    "No se puede habilitar un producto inactivo"
-            );
+                    "No se puede habilitar un producto inactivo");
         }
+
+        boolean disponibilidadAnterior = Boolean.TRUE.equals(producto.getDisponible());
 
         producto.setDisponible(disponible);
 
-        return productoRepository.save(producto);
+        Producto actualizado = productoRepository.save(producto);
+
+        publicarCambioDisponibilidad(id,disponibilidadAnterior,Boolean.TRUE.equals(actualizado.getDisponible()));
+
+        return actualizado;
     }
+
 
     // Desactivación lógica.
     @Transactional
-public void desactivar(Long id) {
-    Producto producto = obtenerPorId(id);
+    public void desactivar(Long id) {
 
-    validarSinPedidosActivos(id);
+        Producto producto = obtenerPorId(id);
 
-    producto.setActivo(false);
-    producto.setDisponible(false);
+        validarSinPedidosActivos(id);
 
-    productoRepository.save(producto);
-}
+        boolean disponibilidadAnterior = Boolean.TRUE.equals(producto.getDisponible());
+
+        producto.setActivo(false);
+        producto.setDisponible(false);
+
+        productoRepository.save(producto);
+
+        publicarCambioDisponibilidad(id,disponibilidadAnterior,false);
+    }
 
     private void validarDatos(Producto producto) {
         if (producto == null) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
-                    "Debe proporcionar los datos del producto"
-            );
+                    "Debe proporcionar los datos del producto");
         }
 
         if (producto.getNombre() == null
                 || producto.getNombre().isBlank()) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
-                    "El nombre del producto es obligatorio"
-            );
+                    "El nombre del producto es obligatorio");
         }
 
         if (producto.getPrecio() == null
                 || producto.getPrecio()
-                    .compareTo(BigDecimal.ZERO) <= 0) {
+                        .compareTo(BigDecimal.ZERO) <= 0) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
-                    "El precio debe ser mayor que cero"
-            );
+                    "El precio debe ser mayor que cero");
         }
 
         if (producto.getCategoria() == null
                 || producto.getCategoria().getIdCategoria() == null) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
-                    "Debe seleccionar una categoría"
-            );
+                    "Debe seleccionar una categoría");
         }
     }
 
@@ -205,44 +221,51 @@ public void desactivar(Long id) {
         Categoria categoria = categoriaRepository.findById(idCategoria)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
-                        "No existe la categoría seleccionada"
-                ));
+                        "No existe la categoría seleccionada"));
 
         if (!Boolean.TRUE.equals(categoria.getActiva())) {
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT,
-                    "No se puede asociar el producto a una categoría inactiva"
-            );
+                    "No se puede asociar el producto a una categoría inactiva");
         }
 
         return categoria;
     }
 
+    private void validarSinPedidosActivos(Long idProducto) {
 
-private void validarSinPedidosActivos(Long idProducto) {
+        EnumSet<EstadoPedido> estadosActivos = EnumSet.of(
+                EstadoPedido.PENDIENTE,
+                EstadoPedido.EN_PREPARACION,
+                EstadoPedido.LISTO,
+                EstadoPedido.ENTREGADO);
 
-    EnumSet<EstadoPedido> estadosActivos = EnumSet.of(
-            EstadoPedido.PENDIENTE,
-            EstadoPedido.EN_PREPARACION,
-            EstadoPedido.LISTO,
-            EstadoPedido.ENTREGADO
-    );
+        boolean tienePedidosActivos = detallePedidoRepository
+                .existsByProducto_IdProductoAndPedido_EstadoIn(
+                        idProducto,
+                        estadosActivos);
 
-    boolean tienePedidosActivos =
-            detallePedidoRepository
-                    .existsByProducto_IdProductoAndPedido_EstadoIn(
-                            idProducto,
-                            estadosActivos
-                    );
-
-    if (tienePedidosActivos) {
-        throw new ResponseStatusException(
-                HttpStatus.CONFLICT,
-                "No se puede desactivar el producto porque "
-                + "está asociado a un pedido activo."
-        );
+        if (tienePedidosActivos) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "No se puede desactivar el producto porque "
+                            + "está asociado a un pedido activo.");
+        }
     }
-}
 
+    private void publicarCambioDisponibilidad(
+            Long idProducto,
+            boolean disponibilidadAnterior,
+            boolean disponibilidadNueva) {
+
+        // Evitamos emitir notificaciones innecesarias.
+        if (disponibilidadAnterior != disponibilidadNueva) {
+
+            eventPublisher.publishEvent(
+                    new ProductoDisponibilidadCambiadaEvent(
+                            idProducto,
+                            disponibilidadNueva));
+        }
+    }
 
 }
