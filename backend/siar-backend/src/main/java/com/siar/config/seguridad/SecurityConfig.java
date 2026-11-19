@@ -102,6 +102,10 @@ public class SecurityConfig {
                         // Facturacion: solo caja y administrador
                         .requestMatchers("/api/facturas/**").hasAnyRole(ADMINISTRADOR, CAJERO)
 
+                        // El handshake se permite; el interceptor valida el JWT
+                        // durante la conexión STOMP.
+                        .requestMatchers("/ws", "/ws/**").permitAll()
+
                         .anyRequest().authenticated())
                 // Valida el header "Authorization: Bearer <token>" en cada peticion
                 .oauth2ResourceServer(oauth2 -> oauth2
