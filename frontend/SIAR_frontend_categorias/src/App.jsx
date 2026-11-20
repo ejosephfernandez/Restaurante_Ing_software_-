@@ -12,6 +12,7 @@ import ProductosPage from "./features/menu/pages/ProductosPage.jsx";
 import MesasPage from "./features/mesas/pages/MesasPage.jsx";
 import ReservasPage from "./features/mesas/pages/ReservasPage.jsx";
 import PedidosPage from "./features/pedidos/pages/PedidosPage.jsx";
+import UsuariosPage from "./features/usuarios/pages/UsuariosPage.jsx";
 
 // Envía al usuario a la pantalla de inicio de su rol
 function InicioPorRol() {
@@ -64,6 +65,12 @@ export default function App() {
                 <Route
                     path="/mesas/reservas"
                     element={<RutaProtegida seccion="reservas"><ReservasPage /></RutaProtegida>}
+                />
+
+                {/* Gestión de usuarios: solo administrador */}
+                <Route
+                    path="/usuarios"
+                    element={<RutaProtegida seccion="usuarios"><UsuariosPage /></RutaProtegida>}
                 />
 
                 <Route path="*" element={<InicioPorRol />} />

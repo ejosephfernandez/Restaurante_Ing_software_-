@@ -24,7 +24,8 @@ export const SECCIONES = {
     productos: { ruta: "/productos", roles: [ADMINISTRADOR, COCINERO] },
     categorias: { ruta: "/categorias", roles: [ADMINISTRADOR] },
     mesas: { ruta: "/mesas", roles: [ADMINISTRADOR, MESERO] },
-    reservas: { ruta: "/mesas/reservas", roles: [ADMINISTRADOR, MESERO, CAJERO] }
+    reservas: { ruta: "/mesas/reservas", roles: [ADMINISTRADOR, MESERO, CAJERO] },
+    usuarios: { ruta: "/usuarios", roles: [ADMINISTRADOR] }
 };
 
 // Primera pantalla de cada rol al iniciar sesión

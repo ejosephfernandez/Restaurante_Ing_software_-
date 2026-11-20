@@ -57,7 +57,7 @@ export default function AdminLayout() {
 
                 <nav className="admin-navigation">
                     {/* Secciones pendientes: se muestran deshabilitadas.
-                        Inicio, Usuarios y Reportes aún no tienen módulo. */}
+                        Inicio y Reportes aún no tienen módulo. */}
                     <div className="admin-nav-disabled" aria-disabled="true">
                         <span className="admin-nav-icon">⌂</span>
                         <span>Inicio</span>
@@ -109,11 +109,16 @@ export default function AdminLayout() {
                         </div>
                     )}
 
-                    {rol === "ADMINISTRADOR" && (
-                        <div className="admin-nav-disabled" aria-disabled="true">
+                    {puedeAcceder(rol, "usuarios") && (
+                        <NavLink
+                            to="/usuarios"
+                            className={({ isActive }) =>
+                                `admin-nav-link ${isActive ? "active" : ""}`
+                            }
+                        >
                             <span className="admin-nav-icon">♙</span>
                             <span>Usuarios</span>
-                        </div>
+                        </NavLink>
                     )}
 
                     {(verMesas || verReservas) && (
