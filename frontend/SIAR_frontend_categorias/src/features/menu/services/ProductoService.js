@@ -5,6 +5,10 @@ export const productoService = {
     listar: () =>
         apiRequest("/productos"),
 
+    // GET: Consultar un producto por su identificador
+    obtenerPorId: (id) =>
+        apiRequest(`/productos/${id}`),
+
     // GET: Consultar categorías activas
     listarCategoriasActivas: () =>
         apiRequest("/categorias/activas"),

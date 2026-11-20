@@ -51,6 +51,35 @@ export default function PedidoForm({
         setProductoSeleccionado(null);
     }, [pedidoInicial]);
 
+    // Si una notificación provoca que el catálogo se actualice y el producto
+    // seleccionado ya no está disponible, se retira de la selección.
+    useEffect(() => {
+        if (!productoSeleccionado) return;
+
+        const productoActualizado = productos.find(
+            (producto) =>
+                String(producto.idProducto) ===
+                String(productoSeleccionado.idProducto)
+        );
+
+        if (
+            !productoActualizado ||
+            productoActualizado.disponible === false ||
+            productoActualizado.activo === false
+        ) {
+            setProductoSeleccionado(null);
+            setError(
+                `El producto "${productoSeleccionado.nombre}" dejó de estar disponible. Selecciona otro producto.`
+            );
+            return;
+        }
+
+        // Conserva en la selección la versión más reciente del producto.
+        if (productoActualizado !== productoSeleccionado) {
+            setProductoSeleccionado(productoActualizado);
+        }
+    }, [productos, productoSeleccionado]);
+
     const mesasDisponibles = useMemo(
         () =>
             mesas.filter((mesa) =>
@@ -115,6 +144,25 @@ export default function PedidoForm({
             setError("Selecciona un producto de la lista.");
             return;
         }
+
+        // Segunda protección visual ante una selección obsoleta.
+        // El backend continúa siendo la validación definitiva.
+        const sigueDisponible = productos.some(
+            (producto) =>
+                String(producto.idProducto) ===
+                    String(productoSeleccionado.idProducto) &&
+                producto.disponible !== false &&
+                producto.activo !== false
+        );
+
+        if (!sigueDisponible) {
+            setProductoSeleccionado(null);
+            setError(
+                `El producto "${productoSeleccionado.nombre}" ya no está disponible. Selecciona otro producto.`
+            );
+            return;
+        }
+
         if (!cantidad || Number(cantidad) <= 0) {
             setError("La cantidad debe ser mayor a cero.");
             return;

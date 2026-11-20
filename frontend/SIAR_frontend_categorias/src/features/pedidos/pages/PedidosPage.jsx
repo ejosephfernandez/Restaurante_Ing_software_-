@@ -1,11 +1,12 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import PedidoForm from "../components/PedidoForm.jsx";
 import PedidosList from "../components/PedidosList.jsx";
 import { pedidoService } from "../services/pedidoService.js";
+import { useAuth } from "../../auth/context/AuthContext.jsx";
+import { suscribirDisponibilidadProductos } from "../../../services/productosDisponibilidadSocket.js";
 import SiarIcon from "../../../components/ui/SiarIcon.jsx";
 import "../../../styles/pedidos.css";
-
 import UsuarioActual from "../../../components/ui/UsuarioActual.jsx";
 /**
  * Página del módulo de pedidos.
@@ -61,6 +62,8 @@ function StatCard({ icon, label, value, note, tone = "icon-green" }) {
 }
 
 export default function PedidosPage() {
+    const { sesion } = useAuth();
+
     const [pedidos, setPedidos] = useState([]);
     const [mesas, setMesas] = useState([]);
     const [productos, setProductos] = useState([]);
@@ -75,6 +78,17 @@ export default function PedidosPage() {
 
     const [formAbierto, setFormAbierto] = useState(false);
     const [pedidoSeleccionado, setPedidoSeleccionado] = useState(null);
+    const cargaCatalogoRef = useRef(0);
+
+    const cargarProductosDisponibles = useCallback(async () => {
+        const idCarga = ++cargaCatalogoRef.current;
+        const productosApi = await pedidoService.listarProductosDisponibles();
+
+        // Evita que una respuesta anterior reemplace un catálogo más reciente.
+        if (idCarga === cargaCatalogoRef.current) {
+            setProductos(Array.isArray(productosApi) ? productosApi : []);
+        }
+    }, []);
 
     // Carga de pedidos cuando cambian los filtros o se solicita una actualización.
     useEffect(() => {
@@ -108,14 +122,13 @@ export default function PedidosPage() {
 
         (async () => {
             try {
-                const [mesasApi, productosApi] = await Promise.all([
+                const [mesasApi] = await Promise.all([
                     pedidoService.listarMesas(),
-                    pedidoService.listarProductosDisponibles()
+                    cargarProductosDisponibles()
                 ]);
 
                 if (vigente) {
                     setMesas(Array.isArray(mesasApi) ? mesasApi : []);
-                    setProductos(Array.isArray(productosApi) ? productosApi : []);
                 }
             } catch (err) {
                 if (vigente) {
@@ -127,7 +140,38 @@ export default function PedidosPage() {
         return () => {
             vigente = false;
         };
-    }, []);
+    }, [cargarProductosDisponibles]);
+
+    // Sincroniza el catálogo de productos disponibles cuando otro usuario
+    // cambia la disponibilidad desde el módulo de Productos.
+    useEffect(() => {
+        if (!sesion?.token) return undefined;
+
+        let vigente = true;
+
+        const desconectar = suscribirDisponibilidadProductos(
+            sesion.token,
+            async () => {
+                if (!vigente) return;
+
+                try {
+                    await cargarProductosDisponibles();
+                } catch (err) {
+                    if (vigente) {
+                        setError(
+                            err?.message ||
+                            "No fue posible sincronizar los productos disponibles."
+                        );
+                    }
+                }
+            }
+        );
+
+        return () => {
+            vigente = false;
+            desconectar();
+        };
+    }, [sesion?.token, cargarProductosDisponibles]);
 
     function recargar() {
         setVersion((actual) => actual + 1);
