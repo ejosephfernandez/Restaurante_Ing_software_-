@@ -101,6 +101,8 @@ public class SecurityConfig {
 
                         // Facturacion: solo caja y administrador
                         .requestMatchers("/api/facturas/**").hasAnyRole(ADMINISTRADOR, CAJERO)
+                        // Gestion de usuarios y roles: solo administrador
+                        .requestMatchers("/api/usuarios", "/api/usuarios/**").hasRole(ADMINISTRADOR)
 
                         // El handshake se permite; el interceptor valida el JWT
                         // durante la conexión STOMP.

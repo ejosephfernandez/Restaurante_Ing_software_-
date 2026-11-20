@@ -6,6 +6,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -32,15 +33,18 @@ import com.siar.negocio.seguridad.AuthService;
 import com.siar.negocio.seguridad.JwtService;
 import com.siar.negocio.seguridad.UsuarioAutenticado;
 import com.siar.negocio.seguridad.UsuarioDetailsService;
+import com.siar.negocio.usuarios.UsuarioDto;
+import com.siar.negocio.usuarios.UsuarioService;
 import com.siar.persistencia.menu.Categoria;
 import com.siar.persistencia.usuario.Permiso;
 import com.siar.persistencia.usuario.Rol;
 import com.siar.persistencia.usuario.Usuario;
 import com.siar.presentacion.menu.CategoriaController;
 import com.siar.presentacion.seguridad.AuthController;
+import com.siar.presentacion.usuarios.UsuarioController;
 
 @WebMvcTest(
-        controllers = {AuthController.class, CategoriaController.class},
+        controllers = {AuthController.class, CategoriaController.class, UsuarioController.class},
         properties = {
                 "siar.jwt.secret=clave-de-pruebas-con-mas-de-32-caracteres",
                 "siar.jwt.expiracion-minutos=60",
@@ -59,6 +63,9 @@ class SeguridadJwtTests {
 
     @MockitoBean
     private CategoriaService categoriaService;
+
+    @MockitoBean
+    private UsuarioService usuarioService;
 
     @BeforeEach
     void configurarUsuarios() {
@@ -150,6 +157,37 @@ class SeguridadJwtTests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"nombre\":\"Postres\"}"))
                 .andExpect(status().isCreated());
+    }
+
+    @Test
+    void soloElAdministradorGestionaUsuarios() throws Exception {
+        when(usuarioService.listar(null, null, null)).thenReturn(List.of(
+                new UsuarioDto(1L, "Usuario admin", "admin@siar.com", "admin", Rol.ADMINISTRADOR, true)));
+
+        mockMvc.perform(get("/api/usuarios").header("Authorization", "Bearer " + login("admin", CLAVE)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].usuario").value("admin"))
+                .andExpect(jsonPath("$[0].contrasena").doesNotExist());
+
+        String tokenMesero = login("mesero", CLAVE);
+        mockMvc.perform(get("/api/usuarios").header("Authorization", "Bearer " + tokenMesero))
+                .andExpect(status().isForbidden());
+        mockMvc.perform(patch("/api/usuarios/2/rol")
+                        .header("Authorization", "Bearer " + tokenMesero)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"rol\":\"ADMINISTRADOR\"}"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void crearUsuarioValidaElCuerpo() throws Exception {
+        mockMvc.perform(post("/api/usuarios")
+                        .header("Authorization", "Bearer " + login("admin", CLAVE))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"nombre\":\"Ana\",\"correo\":\"no-es-correo\",\"usuario\":\"ana\","
+                                + "\"contrasena\":\"123\",\"rol\":\"MESERO\"}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.estado").value(400));
     }
 
     private String login(String usuario, String contrasena) throws Exception {
